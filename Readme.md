@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Арсений Берзин](https://up.htmlacademy.ru/ecmascript/15/user/1250553).
-* Наставник: `Неизвестно`.
+* Наставник: [Антон Попов](https://htmlacademy.ru/profile/joker).
 
 ---
 
