@@ -1,4 +1,4 @@
-export const createMenuTemplate = () => {
+export const createMenuTemplate = () => (
   `<nav class="main-navigation">
   <div class="main-navigation__items">
     <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
@@ -14,4 +14,4 @@ export const createMenuTemplate = () => {
   <li><a href="#" class="sort__button">Sort by date</a></li>
   <li><a href="#" class="sort__button">Sort by rating</a></li>
   </ul>`
-}
+);
