@@ -7,15 +7,15 @@ import {createShowMoreButtonTemplate} from './view/show-more-button.js';
 import {createFilmsTopRatedListTemplate} from './view/films-top-rated-list.js';
 import {createFilmsMostCommentedListTemplate} from './view/films-most-commented-list.js';
 import {createFilmDetailsTemplate} from './view/film-details-popup.js';
+import {createFilmDetailsCommentTemplate} from './view/film-details-popup-comment.js';
 import {getRandomFilm} from './mock/film.js';
 
-const MOCK_FILMS_COUNT = 20;
+const MOCK_FILMS_COUNT = 15;
 
 const FILMS_COUNT = 5;
 const EXTRA_FILMS_COUNT =2;
 
 const films = new Array(MOCK_FILMS_COUNT).fill().map(getRandomFilm);
-console.log(films);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -26,7 +26,7 @@ const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
 render(siteHeaderElement, createHeaderProfileTemplate(), 'beforeend');
-render(siteMainElement, createMenuTemplate(), 'beforeend');
+render(siteMainElement, createMenuTemplate(films), 'beforeend');
 render(siteMainElement, createFilmsSectionTemplate(), 'beforeend');
 
 const filmsSectionElement = document.querySelector('.films');
@@ -37,7 +37,7 @@ const filmsListElement = filmsSectionElement.querySelector('.films-list');
 const filmsListContainerElement = filmsListElement.querySelector('.films-list__container');
 
 for (let i = 0; i < FILMS_COUNT; i++) {
-  render(filmsListContainerElement, createFilmCardTemplate(), 'beforeend');
+  render(filmsListContainerElement, createFilmCardTemplate(films[i]), 'beforeend');
 }
 
 render(filmsListElement, createShowMoreButtonTemplate(), 'beforeend');
@@ -49,8 +49,16 @@ const filmsExtraListElements = filmsSectionElement.querySelectorAll('.films-list
 filmsExtraListElements.forEach((element) => {
   const filmsExtraListContainerElement = element.querySelector('.films-list__container');
   for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
-    render(filmsExtraListContainerElement, createFilmCardTemplate(), 'beforeend');
+    render(filmsExtraListContainerElement, createFilmCardTemplate(films[i]), 'beforeend');
   }
 });
 
-render(body, createFilmDetailsTemplate(), 'beforeend');
+render(body, createFilmDetailsTemplate(films[0]), 'beforeend');
+
+const filmsDeatailsCommentListElements = films[0].comments;
+
+filmsDeatailsCommentListElements.forEach((comment) => {
+  const filmDetailsCommentsListElement = document.querySelector('.film-details__comments-list');
+  render(filmDetailsCommentsListElement, createFilmDetailsCommentTemplate(comment), 'beforeend');
+});
+
