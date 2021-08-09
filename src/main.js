@@ -10,12 +10,11 @@ import {createFilmDetailsTemplate} from './view/film-details-popup.js';
 import {createFilmDetailsCommentTemplate} from './view/film-details-popup-comment.js';
 import {getRandomFilm} from './mock/film.js';
 
-const MOCK_FILMS_COUNT = 15;
-
-const FILMS_COUNT = 5;
+const FILMS_COUNT = 15;
 const EXTRA_FILMS_COUNT =2;
+const FILMS_COUNT_PER_STEP = 5;
 
-const films = new Array(MOCK_FILMS_COUNT).fill().map(getRandomFilm);
+const films = new Array(FILMS_COUNT).fill().map(getRandomFilm);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -36,11 +35,32 @@ render(filmsSectionElement, createFilmsListTemplate(), 'beforeend');
 const filmsListElement = filmsSectionElement.querySelector('.films-list');
 const filmsListContainerElement = filmsListElement.querySelector('.films-list__container');
 
-for (let i = 0; i < FILMS_COUNT; i++) {
+for (let i = 0; i < Math.min(films.length, FILMS_COUNT_PER_STEP); i++) {
   render(filmsListContainerElement, createFilmCardTemplate(films[i]), 'beforeend');
 }
 
-render(filmsListElement, createShowMoreButtonTemplate(), 'beforeend');
+if (films.length > FILMS_COUNT_PER_STEP) {
+  let renderedFilmsCount = FILMS_COUNT_PER_STEP;
+
+  render(filmsListElement, createShowMoreButtonTemplate(), 'beforeend');
+
+  const loadMoreButton = filmsListElement.querySelector('.films-list__show-more');
+
+  loadMoreButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    films
+    .slice(renderedFilmsCount, renderedFilmsCount + FILMS_COUNT_PER_STEP)
+    .forEach((film) => render(filmsListContainerElement, createFilmCardTemplate(film), 'beforeend'));
+
+  renderedFilmsCount += FILMS_COUNT_PER_STEP;
+
+  if (renderedFilmsCount >= films.length) {
+    loadMoreButton.remove();
+  }
+  });
+}
+
+
 render(filmsSectionElement, createFilmsTopRatedListTemplate(films), 'beforeend');
 render(filmsSectionElement, createFilmsMostCommentedListTemplate(films), 'beforeend');
 
