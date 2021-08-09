@@ -7,9 +7,15 @@ import {createShowMoreButtonTemplate} from './view/show-more-button.js';
 import {createFilmsTopRatedListTemplate} from './view/films-top-rated-list.js';
 import {createFilmsMostCommentedListTemplate} from './view/films-most-commented-list.js';
 import {createFilmDetailsTemplate} from './view/film-details-popup.js';
+import {getRandomFilm} from './mock/film.js';
+
+const MOCK_FILMS_COUNT = 20;
 
 const FILMS_COUNT = 5;
 const EXTRA_FILMS_COUNT =2;
+
+const films = new Array(MOCK_FILMS_COUNT).fill().map(getRandomFilm);
+console.log(films);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
