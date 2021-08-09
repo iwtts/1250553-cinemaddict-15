@@ -41,15 +41,26 @@ for (let i = 0; i < FILMS_COUNT; i++) {
 }
 
 render(filmsListElement, createShowMoreButtonTemplate(), 'beforeend');
-render(filmsSectionElement, createFilmsTopRatedListTemplate(), 'beforeend');
-render(filmsSectionElement, createFilmsMostCommentedListTemplate(), 'beforeend');
+render(filmsSectionElement, createFilmsTopRatedListTemplate(films), 'beforeend');
+render(filmsSectionElement, createFilmsMostCommentedListTemplate(films), 'beforeend');
 
 const filmsExtraListElements = filmsSectionElement.querySelectorAll('.films-list--extra');
 
+
+const sortByComments = (a, b) => b.comments.length - a.comments.length;
+const sortByRating = (a, b) => b.totalRating - a.totalRating;
+
 filmsExtraListElements.forEach((element) => {
   const filmsExtraListContainerElement = element.querySelector('.films-list__container');
-  for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
-    render(filmsExtraListContainerElement, createFilmCardTemplate(films[i]), 'beforeend');
+  if (element === filmsExtraListElements[0]) {
+    for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
+      render(filmsExtraListContainerElement, createFilmCardTemplate(films.sort(sortByRating)[i]), 'beforeend');
+    }
+  }
+  if (element === filmsExtraListElements[1]) {
+    for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
+      render(filmsExtraListContainerElement, createFilmCardTemplate(films.sort(sortByComments)[i]), 'beforeend');
+    }
   }
 });
 
