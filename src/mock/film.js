@@ -44,8 +44,7 @@ const getRandomText = () => {
     'In rutrum ac purus sit amet tempus.',
   ];
 
-  const randomIndex = getRandomInteger(0, sentences.length - 1);
-  const getRandomSentence = () => sentences[randomIndex];
+  const getRandomSentence = () => sentences[getRandomInteger(0, sentences.length - 1)];
 
   return new Array(getRandomInteger(minSentences, maxSentences)).fill().map(() => getRandomSentence()).join(' ');
 };
@@ -71,7 +70,7 @@ const getRandomEmotion = () => {
 
 const getRandomComment = () => ({
   author: getRandomName(),
-  comment: getRandomText(),
+  text: getRandomText(),
   date: getRandomDate('D MMMM YYYY'),
   emotion: getRandomEmotion(),
 });
@@ -177,8 +176,7 @@ const getRandomGenres = () => {
     'Thriller',
   ];
 
-  const randomIndex = getRandomInteger(0, genres.length - 1);
-  const getRandomGenre = () => genres[randomIndex];
+  const getRandomGenre = () => genres[getRandomInteger(0, genres.length - 1)];
 
   return new Array(getRandomInteger(minGenres, maxGenres)).fill().map(() => getRandomGenre());
 };
@@ -216,5 +214,3 @@ export const getRandomFilm = () => {
     isFavorite: Boolean(getRandomInteger()),
   };
 };
-
-
