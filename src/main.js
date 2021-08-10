@@ -49,14 +49,14 @@ if (films.length > FILMS_COUNT_PER_STEP) {
   loadMoreButton.addEventListener('click', (evt) => {
     evt.preventDefault();
     films
-    .slice(renderedFilmsCount, renderedFilmsCount + FILMS_COUNT_PER_STEP)
-    .forEach((film) => render(filmsListContainerElement, createFilmCardTemplate(film), 'beforeend'));
+      .slice(renderedFilmsCount, renderedFilmsCount + FILMS_COUNT_PER_STEP)
+      .forEach((film) => render(filmsListContainerElement, createFilmCardTemplate(film), 'beforeend'));
 
-  renderedFilmsCount += FILMS_COUNT_PER_STEP;
+    renderedFilmsCount += FILMS_COUNT_PER_STEP;
 
-  if (renderedFilmsCount >= films.length) {
-    loadMoreButton.remove();
-  }
+    if (renderedFilmsCount >= films.length) {
+      loadMoreButton.remove();
+    }
   });
 }
 
