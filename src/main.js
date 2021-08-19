@@ -7,8 +7,8 @@ import FilmCardView from './view/film-card.js';
 import ShowMoreButtonView from './view/show-more-button.js';
 import FilmsTopRatedListView from './view/films-top-rated-list.js';
 import FilmsMostCommentedListView from './view/films-most-commented-list.js';
-//import FilmDeatailsView from './view/film-details-popup.js';
-//import FilmDeatailsCommentView from './view/film-details-popup-comment.js';
+import FilmDeatailsView from './view/film-details-popup.js';
+import FilmDeatailsCommentView from './view/film-details-popup-comment.js';
 import {getRandomFilm} from './mock/film.js';
 import {render, RenderPosition} from './utils.js';
 
@@ -18,13 +18,35 @@ const FILMS_COUNT_PER_STEP = 5;
 
 const films = new Array(FILMS_COUNT).fill().map(getRandomFilm);
 
-//const body = document.querySelector('body');
+const body = document.querySelector('body');
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
 const renderFilmCard = (filmsListElement, filmCard) => {
   const filmCardComponent = new FilmCardView(filmCard);
-  //const filmDetailsPopup = new FilmDeatailsView(filmCard);
+  const filmDetailsPopup = new FilmDeatailsView(filmCard);
+  const filmsDeatailsCommentListElements = filmCard.comments;
+  const filmDetailsCommentsListElement = filmDetailsPopup.getElement().querySelector('.film-details__comments-list');
+
+  const closeFilmDetailsPopup = () => {
+    body.removeChild(filmDetailsPopup.getElement());
+    body.classList.remove('hide-overflow');
+    filmDetailsPopup.getElement().querySelector('.film-details__close-btn').removeEventListener('click', closeFilmDetailsPopup);
+  };
+
+  const openFilmDetailsPopup = () => {
+    body.appendChild(filmDetailsPopup.getElement());
+    body.classList.add('hide-overflow');
+    filmDetailsPopup.getElement().querySelector('.film-details__close-btn').addEventListener('click', closeFilmDetailsPopup);
+
+    filmsDeatailsCommentListElements.forEach((comment) => {
+      render(filmDetailsCommentsListElement, new FilmDeatailsCommentView(comment).getElement(), RenderPosition.BEFOREEND);
+    });
+  };
+
+  filmCardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', openFilmDetailsPopup);
+  filmCardComponent.getElement().querySelector('.film-card__title').addEventListener('click', openFilmDetailsPopup);
+  filmCardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', openFilmDetailsPopup);
 
   render(filmsListElement, filmCardComponent.getElement(), RenderPosition.BEFOREEND);
 };
