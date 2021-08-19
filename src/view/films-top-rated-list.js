@@ -1,4 +1,6 @@
-export const createFilmsTopRatedListTemplate = () => (
+import {createElement} from '../utils.js';
+
+const createFilmsTopRatedListTemplate = () => (
   `<section class="films-list films-list--extra">
   <h2 class="films-list__title">Top rated</h2>
 
@@ -7,3 +9,25 @@ export const createFilmsTopRatedListTemplate = () => (
   </div>
 </section>`
 );
+
+export default class FilmsTopRatedList {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmsTopRatedListTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
