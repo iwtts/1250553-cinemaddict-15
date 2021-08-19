@@ -1,4 +1,4 @@
-import {createMenuTemplate} from './view/main-menu.js';
+import MainMenuView from './view/main-menu.js';
 import {createHeaderProfileTemplate} from './view/header-profile.js';
 import {createFilmsSectionTemplate} from './view/films-section.js';
 import {createFilmsListTemplate} from './view/films-list.js';
@@ -9,7 +9,7 @@ import {createFilmsMostCommentedListTemplate} from './view/films-most-commented-
 import {createFilmDetailsTemplate} from './view/film-details-popup.js';
 import {createFilmDetailsCommentTemplate} from './view/film-details-popup-comment.js';
 import {getRandomFilm} from './mock/film.js';
-import {renderTemplate} from './utils.js';
+import {renderTemplate, renderElement, RenderPosition} from './utils.js';
 
 const FILMS_COUNT = 15;
 const EXTRA_FILMS_COUNT =2;
@@ -22,7 +22,7 @@ const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
 renderTemplate(siteHeaderElement, createHeaderProfileTemplate(), 'beforeend');
-renderTemplate(siteMainElement, createMenuTemplate(films), 'beforeend');
+renderElement(siteMainElement, new MainMenuView(films).getElement(), RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createFilmsSectionTemplate(), 'beforeend');
 
 const filmsSectionElement = document.querySelector('.films');

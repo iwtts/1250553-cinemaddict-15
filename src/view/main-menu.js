@@ -1,4 +1,6 @@
-export const createMenuTemplate = (films) => {
+import {createElement} from '../utils.js';
+
+const createMenuTemplate = (films) => {
   const watchlist = [];
   const history = [];
   const favourites = [];
@@ -31,3 +33,26 @@ export const createMenuTemplate = (films) => {
     <li><a href="#" class="sort__button">Sort by rating</a></li>
   </ul>`;
 };
+
+export default class SiteMenu {
+  constructor(films) {
+    this._filters = films;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
