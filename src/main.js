@@ -10,10 +10,10 @@ import FilmsMostCommentedListView from './view/films-most-commented-list.js';
 import FilmDeatailsView from './view/film-details-popup.js';
 import FilmDeatailsCommentView from './view/film-details-popup-comment.js';
 import {getRandomFilm} from './mock/film.js';
-import {render, RenderPosition} from './utils.js';
+import {render, RenderPosition, sortByComments, sortByRating} from './utils.js';
 
 const FILMS_COUNT = 15;
-const EXTRA_FILMS_COUNT =2;
+const EXTRA_FILMS_COUNT = 2;
 const FILMS_COUNT_PER_STEP = 5;
 
 const films = new Array(FILMS_COUNT).fill().map(getRandomFilm);
@@ -89,9 +89,6 @@ render(filmsSectionComponent.getElement(), new FilmsTopRatedListView().getElemen
 render(filmsSectionComponent.getElement(), new FilmsMostCommentedListView().getElement(), RenderPosition.BEFOREEND);
 
 const filmsExtraListElements = filmsSectionComponent.getElement().querySelectorAll('.films-list--extra');
-
-const sortByComments = (a, b) => b.comments.length - a.comments.length;
-const sortByRating = (a, b) => b.totalRating - a.totalRating;
 
 filmsExtraListElements.forEach((element) => {
   const filmsExtraListContainerElement = element.querySelector('.films-list__container');

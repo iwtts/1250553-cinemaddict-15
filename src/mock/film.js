@@ -66,7 +66,7 @@ const getRandomEmotion = () => {
 const getRandomComment = () => ({
   author: getRandomName(),
   text: getRandomText(),
-  date: getRandomDate('D MMMM YYYY'),
+  date: getRandomDate(),
   emotion: getRandomEmotion(),
 });
 
