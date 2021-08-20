@@ -10,7 +10,7 @@ import FilmsMostCommentedListView from './view/films-most-commented-list.js';
 import FilmDeatailsView from './view/film-details-popup.js';
 import FilmDeatailsCommentView from './view/film-details-popup-comment.js';
 import {getRandomFilm} from './mock/film.js';
-import {render, RenderPosition, sortByComments, sortByRating} from './utils.js';
+import {render, RenderPosition, sortByComments, sortByRating, isEscEvent} from './utils.js';
 
 const FILMS_COUNT = 15;
 const EXTRA_FILMS_COUNT = 2;
@@ -32,12 +32,21 @@ const renderFilmCard = (filmsListElement, filmCard) => {
     body.removeChild(filmDetailsPopup.getElement());
     body.classList.remove('hide-overflow');
     filmDetailsPopup.getElement().querySelector('.film-details__close-btn').removeEventListener('click', closeFilmDetailsPopup);
+    // eslint-disable-next-line no-use-before-define
+    document.removeEventListener('keydown', onFilmDetailsPopupEscKeydown);
+  };
+
+  const onFilmDetailsPopupEscKeydown = (evt) => {
+    if (isEscEvent(evt)) {
+      closeFilmDetailsPopup();
+    }
   };
 
   const openFilmDetailsPopup = () => {
     body.appendChild(filmDetailsPopup.getElement());
     body.classList.add('hide-overflow');
     filmDetailsPopup.getElement().querySelector('.film-details__close-btn').addEventListener('click', closeFilmDetailsPopup);
+    document.addEventListener('keydown', onFilmDetailsPopupEscKeydown);
 
     filmsDeatailsCommentListElements.forEach((comment) => {
       render(filmDetailsCommentsListElement, new FilmDeatailsCommentView(comment).getElement(), RenderPosition.BEFOREEND);
