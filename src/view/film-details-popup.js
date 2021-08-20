@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
+import {createElement} from '../utils.js';
 
-export const createFilmDetailsTemplate = (film) => {
+const createFilmDetailsTemplate = (film) => {
   const {
     poster,
     ageRating,
@@ -147,3 +148,26 @@ export const createFilmDetailsTemplate = (film) => {
     </form>
   </section>`;
 };
+
+export default class FilmDeatails {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
