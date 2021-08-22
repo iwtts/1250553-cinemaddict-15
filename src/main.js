@@ -13,7 +13,7 @@ import FilmsListEmptyView from './view/films-list-empty.js';
 import {getRandomFilm} from './mock/film.js';
 import {render, RenderPosition, sortByComments, sortByRating, isEscEvent} from './utils.js';
 
-const FILMS_COUNT = 0;
+const FILMS_COUNT = 20;
 const EXTRA_FILMS_COUNT = 2;
 const FILMS_COUNT_PER_STEP = 5;
 
