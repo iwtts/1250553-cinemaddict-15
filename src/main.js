@@ -1,5 +1,6 @@
 import MainMenuView from './view/main-menu.js';
 import HeaderProfileView from './view/header-profile.js';
+import SortView from './view/sort.js';
 import FilmsSectionView from './view/films-section.js';
 import FilmsListView from './view/films-list.js';
 import FilmsListContainerView from './view/films-list-container.js';
@@ -46,6 +47,9 @@ const renderFilmCard = (filmsListElement, filmCard) => {
   };
 
   const openFilmDetailsPopup = () => {
+    if (body.lastElementChild.className === 'film-details') {
+      body.lastElementChild.remove();
+    }
     body.appendChild(filmDetailsPopup.getElement());
     body.classList.add('hide-overflow');
     filmDetailsPopup.setClickHandler(closeFilmDetailsPopup);
@@ -65,6 +69,7 @@ const renderFilmCard = (filmsListElement, filmCard) => {
 
 render(siteHeaderElement, new HeaderProfileView());
 render(siteMainElement, new MainMenuView(films));
+render(siteMainElement, new SortView());
 
 const filmsSectionComponent = new FilmsSectionView();
 render(siteMainElement, filmsSectionComponent);
