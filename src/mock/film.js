@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger} from '../utils/common.js';
-
+import {getRandomInteger} from './utils.js';
 
 const getRandomName = () => {
   const names = [
