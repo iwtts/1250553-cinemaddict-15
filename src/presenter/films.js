@@ -17,6 +17,7 @@ export default class Films {
   constructor(filmsContainer) {
     this._filmsContainer = filmsContainer;
     this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
+    this._filmPresenter = new Map();
 
     this._filmsListEmptyComponent = new FilmsListEmptyView();
     this._filmsListComponent = new FilmsListView();
@@ -57,6 +58,15 @@ export default class Films {
   _renderFilmCard(film, place = this._filmsListContainerComponent) {
     const filmPresenter = new FilmPresenter(place);
     filmPresenter.init(film);
+
+    this._filmPresenter.set(film.id, filmPresenter);
+  }
+
+  _clearFilmsList() {
+    this._filmPresenter.forEach((presenter) => presenter.destroy());
+    this._filmPresenter.clear();
+    this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
+    remove(this._showMoreButtonComponent);
   }
 
   _renderFilmCards(from, to) {
