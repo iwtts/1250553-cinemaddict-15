@@ -9,6 +9,7 @@ import SortView from '../view/sort';
 import FilmPresenter from './film';
 import {render, remove} from '../utils/render.js';
 import {sortByComments, sortByRating} from '../utils/sort';
+import {updateItem} from '../utils/common';
 
 const FILMS_COUNT_PER_STEP = 5;
 const EXTRA_FILMS_COUNT = 2;
@@ -28,6 +29,7 @@ export default class Films {
     this._sortComponent = new SortView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
 
+    this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
@@ -37,6 +39,20 @@ export default class Films {
     render(this._filmsContainer, this._filmsSectionComponent);
 
     this._renderFilms();
+  }
+
+  _handleFilmChange(updatedFilm) {
+    this._films = updateItem(this._films, updatedFilm);
+    this._filmPresenter.get(updatedFilm.id).init(updatedFilm);
+  }
+
+  _handleShowMoreButtonClick() {
+    this._renderFilms(this._renderedFilmsCount, this._renderedFilmsCount + FILMS_COUNT_PER_STEP);
+    this._renderedFilmsCount += FILMS_COUNT_PER_STEP;
+
+    if (this._renderedFilmsCount >= this._films.length) {
+      remove(this._showMoreButtonComponent);
+    }
   }
 
   _renderSort() {
@@ -56,7 +72,7 @@ export default class Films {
   }
 
   _renderFilmCard(film, place = this._filmsListContainerComponent) {
-    const filmPresenter = new FilmPresenter(place);
+    const filmPresenter = new FilmPresenter(place, this._handleFilmChange);
     filmPresenter.init(film);
 
     this._filmPresenter.set(film.id, filmPresenter);
@@ -77,15 +93,6 @@ export default class Films {
 
   _renderFilmListEmpty() {
     render(this._filmsSectionComponent, this._filmsListEmptyComponent);
-  }
-
-  _handleShowMoreButtonClick() {
-    this._renderFilms(this._renderedFilmsCount, this._renderedFilmsCount + FILMS_COUNT_PER_STEP);
-    this._renderedFilmsCount += FILMS_COUNT_PER_STEP;
-
-    if (this._renderedFilmsCount >= this._films.length) {
-      remove(this._showMoreButtonComponent);
-    }
   }
 
   _renderShowMoreButton() {

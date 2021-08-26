@@ -25,7 +25,7 @@ const createFilmDetailsTemplate = (film) => {
   const date = dayjs(releaseDate).format('DD MMMM YYYY');
 
   const wathclistClassName = isInWatchlist
-    ? 'film-details__control-button film-details__control-button--watchlistt film-details__control-button--active'
+    ? 'film-details__control-button film-details__control-button--watchlist film-details__control-button--active'
     : 'film-details__control-button film-details__control-button--watchlist';
 
   const watchedClassName = isAlreadyWatched
@@ -155,15 +155,49 @@ export default class FilmDetails extends AbstractView {
     this._film = film;
 
     this._clickHandler = this._clickHandler.bind(this);
+
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._toWatchListClickHandler = this._toWatchListClickHandler.bind(this);
+    this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film);
   }
 
+  _toWatchListClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.toWatchListClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  _markAsWatchedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.markAsWatchedClick();
+  }
+
   _clickHandler(evt) {
     evt.preventDefault();
     this._callback.editClick();
+  }
+
+  setToWatchListClickHandler(callback) {
+    this._callback.toWatchListClick = callback;
+    this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._toWatchListClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  setMarkAsWatchedClickHandler(callback) {
+    this._callback.markAsWatchedClick = callback;
+    this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._markAsWatchedClickHandler);
   }
 
   setClickHandler(callback) {
