@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import {getRandomInteger} from '../utils/common.js';
-
+import {nanoid} from 'nanoid';
+import {getRandomInteger} from './utils.js';
 
 const getRandomName = () => {
   const names = [
@@ -189,6 +189,7 @@ export const getRandomFilm = () => {
   const isAlreadyWatched = watchingDate !== null;
 
   return {
+    id: nanoid(),
     comments: getRandomComments(),
     title: getRandomTitle(),
     alternativeTitle: getRandomTitle(),

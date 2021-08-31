@@ -26,7 +26,7 @@ const createFilmDetailsCommentTemplate = (comment) => {
   </li>`;
 };
 
-export default class FilmDeatailsComment extends AbstractView {
+export default class FilmDetailsComment extends AbstractView {
   constructor(comment) {
     super();
     this._comment = comment;
