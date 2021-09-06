@@ -7,6 +7,8 @@ import FilmCardPresenter from './film-card.js';
 
 import { updateItem } from '../utils/common.js';
 import { render, remove } from '../utils/render.js';
+import { SortType } from '../const.js';
+import { sortByDate, sortByRating } from '../utils/common.js';
 
 const FILMS_COUNT_PER_STEP = 5;
 
@@ -16,6 +18,7 @@ export default class MainFilmsSection {
     this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
     this._bodyElement =  document.querySelector('body');
     this._filmCardPresenter = new Map();
+    this._currentSortType = SortType.DEFAULT;
 
     this._mainSortComponent = new MainSortView();
     this._mainFilmsSectionComponent = new MainFilmsSectionView();
@@ -25,10 +28,12 @@ export default class MainFilmsSection {
 
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(mainSectionFilms) {
     this._mainSectionFilms = mainSectionFilms.slice();
+    this._sourcedMainSectionFilms = mainSectionFilms.slice();
 
     this._renderMainSort();
     render(this._container, this._mainFilmsSectionComponent);
@@ -38,11 +43,38 @@ export default class MainFilmsSection {
 
   _handleFilmChange(updatedFilm) {
     this._mainSectionFilms = updateItem(this._mainSectionFilms, updatedFilm);
+    this._sourcedMainSectionFilms = updateItem(this._sourcedMainSectionFilms, updatedFilm);
     this._filmCardPresenter.get(updatedFilm.id).init(updatedFilm);
+  }
+
+  _sortFilmCards(sortType) {
+    switch (sortType) {
+      case SortType.DATE:
+        this._mainSectionFilms.sort(sortByDate);
+        break;
+      case SortType.RATING:
+        this._mainSectionFilms.sort(sortByRating);
+        break;
+      default:
+        this._mainSectionFilms = this._sourcedMainSectionFilms.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortFilmCards(sortType);
+    this._clearFilmsList();
+    this._renderFilmsList();
   }
 
   _renderMainSort() {
     render(this._container, this._mainSortComponent);
+    this._mainSortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderFilmCard(film) {
