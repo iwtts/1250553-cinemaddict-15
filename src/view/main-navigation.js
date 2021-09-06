@@ -1,12 +1,12 @@
-import AbstractView from './abstract.js';
+import AbstractView from './abstract';
 
-const createMenuTemplate = (films) => {
+const createMainNavigationTemplate = (films) => {
   const watchlist = [];
   const history = [];
   const favourites = [];
 
   films.forEach((film) => {
-    if (film.isInWatchlist) {
+    if (film.isInWatchList) {
       watchlist.push(film);
     }
     if (film.isAlreadyWatched) {
@@ -28,13 +28,13 @@ const createMenuTemplate = (films) => {
   </nav>`;
 };
 
-export default class SiteMenu extends AbstractView {
+export default class MainNavigation extends AbstractView {
   constructor(films) {
     super();
     this._films = films;
   }
 
   getTemplate() {
-    return createMenuTemplate(this._films);
+    return createMainNavigationTemplate(this._films);
   }
 }

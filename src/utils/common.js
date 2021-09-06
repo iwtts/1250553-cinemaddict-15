@@ -1,5 +1,3 @@
-export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
-
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 

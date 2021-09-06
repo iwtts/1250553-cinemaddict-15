@@ -1,13 +1,8 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract.js';
+import AbstractView from './abstract';
 
 const createFilmDetailsCommentTemplate = (comment) => {
-  const {
-    emotion,
-    date,
-    text,
-    author,
-  } = comment;
+  const {emotion, date, text, author} = comment;
 
   const commentDate = dayjs(date).format('YYYY/MM/DD HH:mm');
 
@@ -29,10 +24,10 @@ const createFilmDetailsCommentTemplate = (comment) => {
 export default class FilmDetailsComment extends AbstractView {
   constructor(comment) {
     super();
-    this._comment = comment;
+    this.comment = comment;
   }
 
   getTemplate() {
-    return createFilmDetailsCommentTemplate(this._comment);
+    return createFilmDetailsCommentTemplate(this.comment);
   }
 }
