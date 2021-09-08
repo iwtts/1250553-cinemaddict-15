@@ -1,18 +1,22 @@
-import MainMenuView from './view/main-menu.js';
 import HeaderProfileView from './view/header-profile.js';
-import FilmsPresenter from './presenter/films.js';
-import {getRandomFilm} from './mock/film.js';
-import {render} from './utils/render.js';
+import MainNavigationView from './view/main-navigation.js';
+import FooterStatiscticsView from './view/footer-statistics.js';
 
-const FILMS_COUNT = 20;
+import MainFilmsSectionPresenter from './presenter/main-films.js';
 
-const films = new Array(FILMS_COUNT).fill().map(getRandomFilm);
+import { render } from './utils/render.js';
+import { generateFilm } from './mock/film.js';
 
-const siteHeaderElement = document.querySelector('.header');
-const siteMainElement = document.querySelector('.main');
+const FILMS_COUNT = 25;
 
-render(siteHeaderElement, new HeaderProfileView());
-render(siteMainElement, new MainMenuView(films));
+const films = new Array(FILMS_COUNT).fill().map(generateFilm);
 
-const filmsPresenter = new FilmsPresenter(siteMainElement);
-filmsPresenter.init(films);
+const headerElement = document.querySelector('.header');
+const mainElement = document.querySelector('.main');
+const mainFilmsSectionPresenter = new MainFilmsSectionPresenter(mainElement);
+const footerStatisticsContainerElement = document.querySelector('.footer__statistics');
+
+render(headerElement, new HeaderProfileView());
+render(mainElement, new MainNavigationView(films));
+mainFilmsSectionPresenter.init(films);
+render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
