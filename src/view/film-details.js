@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract';
+import SmartView from './smart';
 
-const createFilmDetailsPopupTemplate = (film) => {
-  const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = film;
+const createFilmDetailsPopupTemplate = (data) => {
+  const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments, checkedEmotion} = data;
 
   const date = dayjs(releaseDate).format('DD MMMM YYYY');
 
@@ -89,7 +89,9 @@ const createFilmDetailsPopupTemplate = (film) => {
           </ul>
 
           <div class="film-details__new-comment">
-            <div class="film-details__add-emoji-label"></div>
+            <div class="film-details__add-emoji-label">
+              ${checkedEmotion ? `<img src="images/emoji/${checkedEmotion}.png" width="55" height="55" alt="emoji-${checkedEmotion}">` : ''}
+            </div>
 
             <label class="film-details__comment-label">
               <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -123,20 +125,40 @@ const createFilmDetailsPopupTemplate = (film) => {
   </section>`;
 };
 
-export default class FilmDetailsPopup extends AbstractView {
+export default class FilmDetailsPopup extends SmartView {
   constructor(film) {
     super();
-    this._film = film;
+    this._data = FilmDetailsPopup.parseFilmToData(film);
 
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
     this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
 
     this._closeFilmDetailsClickHandler = this._closeFilmDetailsClickHandler.bind(this);
+
+    this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
+    this._checkedEmotion = null;
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsPopupTemplate(this._film);
+    return createFilmDetailsPopupTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
+    this.setMarkAsWatchedClickHandler(this._callback._markAsWatchedClick);
+    this.setFavouriteClickHandler(this._callback._favouriteClick);
+    this.setCloseFilmDetailsClickHandler(this._callback.closeFilmDetailsClick);
+
+    this._setInnerHandlers();
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('change', this._emotionChangeHandler);
   }
 
   _addToWatchListClickHandler(evt) {
@@ -181,5 +203,27 @@ export default class FilmDetailsPopup extends AbstractView {
     this._callback.closeFilmDetailsClick = callback;
 
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeFilmDetailsClickHandler);
+  }
+
+  _onEmotionChange(emotion) {
+    this.updateData({
+      checkedEmotion: emotion,
+    });
+  }
+
+  _emotionChangeHandler(evt) {
+    if (evt.target.matches('input[type="radio"]')) {
+      this._onEmotionChange(evt.target.value);
+    }
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+      {},
+      film,
+      {
+        checkedEmotion: null,
+      },
+    );
   }
 }
