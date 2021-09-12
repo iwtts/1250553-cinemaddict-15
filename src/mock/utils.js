@@ -46,7 +46,7 @@ export const getRandomDate = () => {
 
 export const getRandomRating = () => `${getRandomInteger(4, 9)}.${getRandomInteger(0, 9)}`;
 
-export const getRandomRuntime = () => `${getRandomInteger(1, 3)}h ${getRandomInteger(1, 59)}m`;
+export const getRandomRuntime = () => `${getRandomInteger(30, 180)}`;
 
 export const getRandomWatchingDate = () => {
   const isDate = Boolean(getRandomInteger(0, 1));
