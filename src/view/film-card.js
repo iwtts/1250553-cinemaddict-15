@@ -1,10 +1,14 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import AbstractView from './abstract';
+
+dayjs.extend(duration);
 
 const createFilmCardTemplate = (film) => {
   const {title, totalRating, releaseDate, runtime, genres, poster, description, comments, isInWatchList, isAlreadyWatched, isFavorite} = film;
 
   const date = dayjs(releaseDate).format('YYYY');
+  const time = `${dayjs.duration(runtime, 'minutes').hours()}h ${dayjs.duration(runtime, 'minutes').minutes()}m`;
 
   const defineButtonActiveState = (condition) => {
     if (condition) {
@@ -17,7 +21,7 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__rating">${totalRating}</p>
     <p class="film-card__info">
       <span class="film-card__year">${date}</span>
-      <span class="film-card__duration">${runtime}</span>
+      <span class="film-card__duration">${time}</span>
       <span class="film-card__genre">${genres.join(', ')}</span>
     </p>
     <img src="${poster}" alt="${title} poster" class="film-card__poster">

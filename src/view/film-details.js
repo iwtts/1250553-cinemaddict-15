@@ -1,10 +1,14 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import AbstractView from './abstract';
+
+dayjs.extend(duration);
 
 const createFilmDetailsPopupTemplate = (film) => {
   const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = film;
 
   const date = dayjs(releaseDate).format('DD MMMM YYYY');
+  const time = `${dayjs.duration(runtime, 'minutes').hours()}h ${dayjs.duration(runtime, 'minutes').minutes()}m`;
 
   const defineButtonActiveState = (condition) => {
     if (condition) {
@@ -54,7 +58,7 @@ const createFilmDetailsPopupTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${runtime}</td>
+                <td class="film-details__cell">${time}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
