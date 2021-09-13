@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import AbstractView from './abstract';
 
+import { MAX_DESCRIPTION_LENGTH } from './const';
+
 dayjs.extend(duration);
 
 const createFilmCardTemplate = (film) => {
@@ -16,6 +18,8 @@ const createFilmCardTemplate = (film) => {
     }
   };
 
+  const getFilmCardDescription = () => (description.length > MAX_DESCRIPTION_LENGTH) ? `${description.substring(0, MAX_DESCRIPTION_LENGTH)}...`: description;
+
   return `<article class="film-card">
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${totalRating}</p>
@@ -25,7 +29,7 @@ const createFilmCardTemplate = (film) => {
       <span class="film-card__genre">${genres.join(', ')}</span>
     </p>
     <img src="${poster}" alt="${title} poster" class="film-card__poster">
-    <p class="film-card__description">${description}</p>
+    <p class="film-card__description">${getFilmCardDescription()}</p>
     <a class="film-card__comments">${comments.length} comments</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${defineButtonActiveState(isInWatchList)}" type="button">Add to watchlist</button>
