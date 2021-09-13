@@ -1,12 +1,9 @@
 import FilmCardView from '../view/film-card';
 import FilmDetailsPopupView from '../view/film-details';
-import FilmDetailsGenreView from '../view/film-details-genre';
 import FilmDetailsCommentView from '../view/film-details-comment';
 import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
 import { render, replace, remove } from '../utils/render';
-
-const FILM_DETAILS_GENRES_ROW_NUMBER = 6;
 
 export default class FilmCard {
   constructor(container, changeData) {
@@ -37,13 +34,8 @@ export default class FilmCard {
     this._filmCardComponent = new FilmCardView(film);
     this._filmDetailsComponent = new FilmDetailsPopupView(film);
 
-    const filmDetailsGenresList = this._filmDetailsComponent.getElement().querySelectorAll('td:nth-last-of-type(1)')[FILM_DETAILS_GENRES_ROW_NUMBER];
     const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
     const filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
-
-    for (let i =0; i < this._film.genres.length; i++) {
-      render(filmDetailsGenresList, new FilmDetailsGenreView(this._film.genres[i]));
-    }
 
     for (let i = 0; i < this._film.comments.length; i++) {
       render(filmDetailsCommentsList, new FilmDetailsCommentView(this._film.comments[i]));

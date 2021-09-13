@@ -1,22 +1,12 @@
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import AbstractView from './abstract';
 
+import { renderGenres, getRuntime, getReleaseDate } from './utils';
 import { MAX_DESCRIPTION_LENGTH } from './const';
-
-dayjs.extend(duration);
 
 const createFilmCardTemplate = (film) => {
   const {title, totalRating, releaseDate, runtime, genres, poster, description, comments, isInWatchList, isAlreadyWatched, isFavorite} = film;
 
-  const date = dayjs(releaseDate).format('YYYY');
-  const time = `${dayjs.duration(runtime, 'minutes').hours()}h ${dayjs.duration(runtime, 'minutes').minutes()}m`;
-
-  const defineButtonActiveState = (condition) => {
-    if (condition) {
-      return 'film-card__controls-item--active';
-    }
-  };
+  const defineButtonActiveState = (condition) => (condition) ? 'film-card__controls-item--active' : '';
 
   const getFilmCardDescription = () => (description.length > MAX_DESCRIPTION_LENGTH) ? `${description.substring(0, MAX_DESCRIPTION_LENGTH)}...`: description;
 
@@ -24,9 +14,9 @@ const createFilmCardTemplate = (film) => {
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${totalRating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${date}</span>
-      <span class="film-card__duration">${time}</span>
-      <span class="film-card__genre">${genres.join(', ')}</span>
+      <span class="film-card__year">${getReleaseDate(releaseDate, 'YYYY')}</span>
+      <span class="film-card__duration">${getRuntime(runtime)}</span>
+      ${renderGenres(genres, 'card')}
     </p>
     <img src="${poster}" alt="${title} poster" class="film-card__poster">
     <p class="film-card__description">${getFilmCardDescription()}</p>
