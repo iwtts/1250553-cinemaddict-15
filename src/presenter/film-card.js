@@ -23,6 +23,8 @@ export default class FilmCard {
     this._handleCloseFilmDetailsClick = this._handleCloseFilmDetailsClick.bind(this);
     this._handleFavouriteClick = this._handleFavouriteClick.bind(this);
 
+    this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
+
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
@@ -39,7 +41,9 @@ export default class FilmCard {
     const filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
     for (let i = 0; i < this._film.comments.length; i++) {
-      render(filmDetailsCommentsList, new FilmDetailsCommentView(this._film.comments[i]));
+      const filmDetailsCommentComponent = new FilmDetailsCommentView(this._film.comments[i]);
+      render(filmDetailsCommentsList, filmDetailsCommentComponent);
+      filmDetailsCommentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
     }
 
     render(filmDetailsCommentWrap, new FilmDetailsNewCommentView);
@@ -146,6 +150,20 @@ export default class FilmCard {
         this._film,
         {
           isFavorite: !this._film.isFavorite,
+        },
+      ),
+    );
+  }
+
+  _handleCommentDeleteClick() {
+    this._changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      Object.assign(
+        {},
+        this._film,
+        {
+          //comments: this._film.comments,
         },
       ),
     );

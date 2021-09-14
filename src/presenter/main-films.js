@@ -56,6 +56,9 @@ export default class MainFilmsSection {
       case UserAction.UPDATE_FILM:
         this._filmsModel.updateFilm(updateType, update);
         break;
+      case UserAction.DELETE_COMMENT:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
     }
   }
 
@@ -104,13 +107,6 @@ export default class MainFilmsSection {
 
   _renderFilmCards(films) {
     films.forEach((film) => this._renderFilmCard(film));
-  }
-
-  _clearFilmsList() {
-    this._filmCardPresenter.forEach((presenter) => presenter.destroy());
-    this._filmCardPresenter.clear();
-    this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
-    remove(this._showMoreButtonComponent);
   }
 
   _renderFilmsListEmpty() {

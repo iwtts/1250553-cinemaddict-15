@@ -25,9 +25,21 @@ export default class FilmDetailsComment extends AbstractView {
   constructor(comment) {
     super();
     this.comment = comment;
+
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsCommentTemplate(this.comment);
+  }
+
+  _commentDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.commentDeleteClick();
+  }
+
+  setCommentDeleteClickHandler(callback) {
+    this._callback.commentDeleteClick = callback;
+    this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._commentDeleteClickHandler);
   }
 }
