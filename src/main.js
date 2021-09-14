@@ -13,6 +13,13 @@ import { generateFilm } from './mock/film.js';
 const FILMS_COUNT = 25;
 
 const films = new Array(FILMS_COUNT).fill().map(generateFilm);
+const filters = [
+  {
+    type: 'all',
+    name: 'All movies',
+    count: 0,
+  },
+];
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(films);
@@ -25,6 +32,6 @@ const mainFilmsSectionPresenter = new MainFilmsSectionPresenter(mainElement, fil
 const footerStatisticsContainerElement = document.querySelector('.footer__statistics');
 
 render(headerElement, new HeaderProfileView());
-render(mainElement, new MainNavigationView(films));
+render(mainElement, new MainNavigationView(filters, 'all'));
 mainFilmsSectionPresenter.init();
 render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
