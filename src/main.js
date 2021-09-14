@@ -23,5 +23,5 @@ const footerStatisticsContainerElement = document.querySelector('.footer__statis
 
 render(headerElement, new HeaderProfileView());
 render(mainElement, new MainNavigationView(films));
-mainFilmsSectionPresenter.init(films);
+mainFilmsSectionPresenter.init();
 render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));

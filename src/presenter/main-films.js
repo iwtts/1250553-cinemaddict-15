@@ -5,7 +5,6 @@ import FilmsListView from '../view/films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmCardPresenter from './film-card.js';
 
-import { updateItem } from '../utils/common.js';
 import { render, remove } from '../utils/render.js';
 import { SortType } from '../const.js';
 import { sortByDate, sortByRating } from '../utils/common.js';
@@ -32,39 +31,26 @@ export default class MainFilmsSection {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(mainSectionFilms) {
-    this._mainSectionFilms = mainSectionFilms.slice();
-    this._sourcedMainSectionFilms = mainSectionFilms.slice();
-
+  init() {
     this._renderMainSort();
-    render(this._container, this._mainFilmsSectionComponent);
 
+    render(this._container, this._mainFilmsSectionComponent);
     this._renderMainFilmsSection();
   }
 
   _getFilms() {
+    switch (this._currentSortType) {
+      case SortType.DATE:
+        return this._filmsModel.getFilms().slice().sort(sortByDate);
+      case SortType.RATING:
+        return this._filmsModel.getFilms().slice().sort(sortByRating);
+    }
+
     return this._filmsModel.getFilms();
   }
 
   _handleFilmChange(updatedFilm) {
-    this._mainSectionFilms = updateItem(this._mainSectionFilms, updatedFilm);
-    this._sourcedMainSectionFilms = updateItem(this._sourcedMainSectionFilms, updatedFilm);
     this._filmCardPresenter.get(updatedFilm.id).init(updatedFilm);
-  }
-
-  _sortFilmCards(sortType) {
-    switch (sortType) {
-      case SortType.DATE:
-        this._mainSectionFilms.sort(sortByDate);
-        break;
-      case SortType.RATING:
-        this._mainSectionFilms.sort(sortByRating);
-        break;
-      default:
-        this._mainSectionFilms = this._sourcedMainSectionFilms.slice();
-    }
-
-    this._currentSortType = sortType;
   }
 
   _handleSortTypeChange(sortType) {
@@ -72,7 +58,7 @@ export default class MainFilmsSection {
       return;
     }
 
-    this._sortFilmCards(sortType);
+    this._currentSortType = sortType;
     this._clearFilmsList();
     this._renderFilmsList();
   }
@@ -88,10 +74,8 @@ export default class MainFilmsSection {
     this._filmCardPresenter.set(film.id, filmCardPresenter);
   }
 
-  _renderFilmCards(from, to) {
-    this._mainSectionFilms
-      .slice(from, to)
-      .forEach((mainSectionFilm) => this._renderFilmCard(mainSectionFilm));
+  _renderFilmCards(films) {
+    films.forEach((film) => this._renderFilmCard(film));
   }
 
   _clearFilmsList() {
@@ -109,18 +93,25 @@ export default class MainFilmsSection {
     render(this._mainFilmsSectionComponent, this._filmsListComponent);
     this._filmsListContainerElement = this._filmsListComponent.getElement().querySelector('.films-list__container');
 
-    this._renderFilmCards(0, Math.min(this._mainSectionFilms.length, FILMS_COUNT_PER_STEP));
+    const filmsCount = this._getFilms().length;
+    const films = this._getFilms().slice(0, Math.min(filmsCount, FILMS_COUNT_PER_STEP));
 
-    if (this._mainSectionFilms.length > FILMS_COUNT_PER_STEP) {
+    this._renderFilmCards(films);
+
+    if (filmsCount > FILMS_COUNT_PER_STEP) {
       this._renderShowMoreButton();
     }
   }
 
   _handleShowMoreButtonClick() {
-    this._renderFilmCards(this._renderedFilmCardsCount, this._renderedFilmCardsCount + FILMS_COUNT_PER_STEP);
-    this._renderedFilmCardsCount += FILMS_COUNT_PER_STEP;
+    const filmsCount = this._getFilms().length;
+    const newRenderedFilmCardsCount = Math.min(filmsCount, this._renderedFilmCardsCount + FILMS_COUNT_PER_STEP);
+    const films = this._getFilms().slice(this._renderedFilmCardsCount, newRenderedFilmCardsCount);
 
-    if (this._renderedFilmCardsCount >= this._mainSectionFilms.length) {
+    this._renderFilmCards(films);
+    this._renderedFilmCardsCount = newRenderedFilmCardsCount;
+
+    if (this._renderedFilmCardsCount >= filmsCount) {
       remove(this._showMoreButtonComponent);
     }
   }
@@ -132,7 +123,7 @@ export default class MainFilmsSection {
   }
 
   _renderMainFilmsSection() {
-    if (this._mainSectionFilms.length === 0) {
+    if (this._getFilms().length === 0) {
       remove(this._mainSortComponent);
       this._renderFilmsListEmpty();
       return;
