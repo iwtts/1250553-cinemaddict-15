@@ -155,7 +155,7 @@ export default class FilmCard {
     );
   }
 
-  _handleCommentDeleteClick() {
+  _handleCommentDeleteClick(id) {
     this._changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
@@ -163,7 +163,7 @@ export default class FilmCard {
         {},
         this._film,
         {
-          //comments: this._film.comments,
+          comments: this._film.comments.filter((comment) => comment.id !== id),
         },
       ),
     );

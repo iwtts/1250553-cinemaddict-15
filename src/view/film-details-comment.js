@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract';
 
 const createFilmDetailsCommentTemplate = (comment) => {
-  const {emotion, date, text, author} = comment;
+  const {id, emotion, date, text, author} = comment;
 
   const commentDate = dayjs(date).format('YYYY/MM/DD HH:mm');
 
@@ -15,7 +15,7 @@ const createFilmDetailsCommentTemplate = (comment) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
       </p>
     </div>
   </li>`;
@@ -35,7 +35,7 @@ export default class FilmDetailsComment extends AbstractView {
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.commentDeleteClick();
+    this._callback.commentDeleteClick(evt.target.dataset.id);
   }
 
   setCommentDeleteClickHandler(callback) {
