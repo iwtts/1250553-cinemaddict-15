@@ -5,6 +5,7 @@ import FooterStatiscticsView from './view/footer-statistics.js';
 import MainFilmsSectionPresenter from './presenter/main-films.js';
 
 import FilmsModel from './model/films.js';
+import FilterModel from './model/filter.js';
 
 import { render } from './utils/render.js';
 import { generateFilm } from './mock/film.js';
@@ -15,6 +16,8 @@ const films = new Array(FILMS_COUNT).fill().map(generateFilm);
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(films);
+
+const filterModel = new FilterModel();
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
