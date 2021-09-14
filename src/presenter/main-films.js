@@ -26,9 +26,12 @@ export default class MainFilmsSection {
     this._filmsListComponent = new FilmsListView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
 
-    this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+
+    this._filmsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -49,8 +52,20 @@ export default class MainFilmsSection {
     return this._filmsModel.getFilms();
   }
 
-  _handleFilmChange(updatedFilm) {
-    this._filmCardPresenter.get(updatedFilm.id).init(updatedFilm);
+  _handleViewAction(actionType, updateType, update) {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+  }
+
+  _handleModelEvent(updateType, data) {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть фильма
+    // - обновить фильм
+    // - обновить весь список
   }
 
   _handleSortTypeChange(sortType) {
@@ -69,7 +84,7 @@ export default class MainFilmsSection {
   }
 
   _renderFilmCard(film) {
-    const filmCardPresenter = new FilmCardPresenter(this._filmsListContainerElement, this._handleFilmChange);
+    const filmCardPresenter = new FilmCardPresenter(this._filmsListContainerElement, this._handleViewAction);
     filmCardPresenter.init(film);
     this._filmCardPresenter.set(film.id, filmCardPresenter);
   }

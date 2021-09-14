@@ -4,6 +4,7 @@ import FilmDetailsCommentView from '../view/film-details-comment';
 import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
 import { render, replace, remove } from '../utils/render';
+import { UserAction, UpdateType } from '../const.js';
 
 export default class FilmCard {
   constructor(container, changeData) {
@@ -110,6 +111,8 @@ export default class FilmCard {
 
   _handleAddToWatchListClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -122,6 +125,8 @@ export default class FilmCard {
 
   _handleMarkAsWatchedClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -134,6 +139,8 @@ export default class FilmCard {
 
   _handleFavouriteClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
