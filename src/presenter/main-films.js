@@ -7,7 +7,7 @@ import FilmCardPresenter from './film-card.js';
 
 import { filter } from '../utils/filter.js';
 import { RenderPosition, render, remove } from '../utils/render.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortByDate, sortByRating } from '../utils/common.js';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -20,13 +20,14 @@ export default class MainFilmsSection {
     this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
     this._bodyElement =  document.querySelector('body');
     this._filmCardPresenter = new Map();
+    this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
 
     this._mainSortComponent = null;
     this._showMoreButtonComponent = null;
+    this._filmsListEmptyComponent = null;
 
     this._mainFilmsSectionComponent = new MainFilmsSectionView();
-    this._filmsListEmptyComponent = new FilmsListEmptyView();
     this._filmsListComponent = new FilmsListView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -44,9 +45,9 @@ export default class MainFilmsSection {
   }
 
   _getFilms() {
-    const filterType = this._filterModel.getFilter();
+    this._filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms();
-    const filtredFilms = filter[filterType](films);
+    const filtredFilms = filter[this._filterType](films);
 
     switch (this._currentSortType) {
       case SortType.DATE:
@@ -117,6 +118,7 @@ export default class MainFilmsSection {
   }
 
   _renderFilmsListEmpty() {
+    this._filmsListEmptyComponent = new FilmsListEmptyView(this._filterType);
     render(this._mainFilmsSectionComponent, this._filmsListEmptyComponent);
   }
 
@@ -156,8 +158,11 @@ export default class MainFilmsSection {
     this._filmCardPresenter.clear();
 
     remove(this._mainSortComponent);
-    remove(this._filmsListEmptyComponent);
     remove(this._showMoreButtonComponent);
+
+    if (this._filmsListEmptyComponent) {
+      remove(this._filmsListEmptyComponent);
+    }
 
     if (resetRenderedFilmCardsCount) {
       this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;

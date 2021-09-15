@@ -11,7 +11,7 @@ import FilterModel from './model/filter.js';
 import { render } from './utils/render.js';
 import { generateFilm } from './mock/film.js';
 
-const FILMS_COUNT = 25;
+const FILMS_COUNT = 0;
 
 const films = new Array(FILMS_COUNT).fill().map(generateFilm);
 
