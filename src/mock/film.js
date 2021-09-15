@@ -4,7 +4,7 @@ import { getRandomInteger, getRandomString, getRandomStrings, getRandomFishText,
 
 import { NAMES, EMOTIONS, TITLES, POSTERS, AGE_RATINGS, COUNTRIES, GENRES } from './const.js';
 
-const generateComment = () => ({
+export const generateComment = () => ({
   id: nanoid(),
   author: getRandomString(NAMES),
   text: getRandomFishText(),

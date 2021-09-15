@@ -3,6 +3,7 @@ import FilmDetailsPopupView from '../view/film-details';
 import FilmDetailsCommentView from '../view/film-details-comment';
 import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
+import { generateComment } from '../mock/film';
 import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
 
@@ -24,6 +25,7 @@ export default class FilmCard {
     this._handleFavouriteClick = this._handleFavouriteClick.bind(this);
 
     this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
+    this._handleAddComment = this._handleAddComment.bind(this);
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
@@ -36,17 +38,20 @@ export default class FilmCard {
 
     this._filmCardComponent = new FilmCardView(film);
     this._filmDetailsComponent = new FilmDetailsPopupView(film);
+    this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
     const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
-    const filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
     for (let i = 0; i < this._film.comments.length; i++) {
       const filmDetailsCommentComponent = new FilmDetailsCommentView(this._film.comments[i]);
-      render(filmDetailsCommentsList, filmDetailsCommentComponent);
+      render(this._filmDetailsCommentsList, filmDetailsCommentComponent);
       filmDetailsCommentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
     }
 
-    render(filmDetailsCommentWrap, new FilmDetailsNewCommentView);
+    const filmDetailsNewCommentComponent = new FilmDetailsNewCommentView();
+
+    render(filmDetailsCommentWrap, filmDetailsNewCommentComponent);
+    filmDetailsNewCommentComponent.setAddCommentHandler(this._handleAddComment);
 
     this._filmCardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._filmCardComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
@@ -168,5 +173,25 @@ export default class FilmCard {
       ),
     );
   }
-}
 
+  _handleAddComment(newCommentEmotion, newCommentText) {
+    const newComment = generateComment();
+    newComment.text = newCommentText;
+    newComment.emotion = newCommentEmotion;
+
+    const updatedComments = this._film.comments.slice();
+    updatedComments.push(newComment);
+
+    this._changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      Object.assign(
+        {},
+        this._film,
+        {
+          comments: updatedComments,
+        },
+      ),
+    );
+  }
+}
