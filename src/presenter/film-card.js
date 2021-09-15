@@ -1,12 +1,11 @@
 import FilmCardView from '../view/film-card';
 import FilmDetailsPopupView from '../view/film-details';
-import FilmDetailsGenreView from '../view/film-details-genre';
 import FilmDetailsCommentView from '../view/film-details-comment';
 import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
+import { generateComment } from '../mock/film';
 import { render, replace, remove } from '../utils/render';
-
-const FILM_DETAILS_GENRES_ROW_NUMBER = 6;
+import { UserAction, UpdateType } from '../const.js';
 
 export default class FilmCard {
   constructor(container, changeData) {
@@ -25,6 +24,9 @@ export default class FilmCard {
     this._handleCloseFilmDetailsClick = this._handleCloseFilmDetailsClick.bind(this);
     this._handleFavouriteClick = this._handleFavouriteClick.bind(this);
 
+    this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
+    this._handleAddComment = this._handleAddComment.bind(this);
+
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
@@ -36,20 +38,20 @@ export default class FilmCard {
 
     this._filmCardComponent = new FilmCardView(film);
     this._filmDetailsComponent = new FilmDetailsPopupView(film);
+    this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
-    const filmDetailsGenresList = this._filmDetailsComponent.getElement().querySelectorAll('td:nth-last-of-type(1)')[FILM_DETAILS_GENRES_ROW_NUMBER];
     const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
-    const filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
-
-    for (let i =0; i < this._film.genres.length; i++) {
-      render(filmDetailsGenresList, new FilmDetailsGenreView(this._film.genres[i]));
-    }
 
     for (let i = 0; i < this._film.comments.length; i++) {
-      render(filmDetailsCommentsList, new FilmDetailsCommentView(this._film.comments[i]));
+      const filmDetailsCommentComponent = new FilmDetailsCommentView(this._film.comments[i]);
+      render(this._filmDetailsCommentsList, filmDetailsCommentComponent);
+      filmDetailsCommentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
     }
 
-    render(filmDetailsCommentWrap, new FilmDetailsNewCommentView);
+    const filmDetailsNewCommentComponent = new FilmDetailsNewCommentView();
+
+    render(filmDetailsCommentWrap, filmDetailsNewCommentComponent);
+    filmDetailsNewCommentComponent.setAddCommentHandler(this._handleAddComment);
 
     this._filmCardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._filmCardComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
@@ -118,6 +120,8 @@ export default class FilmCard {
 
   _handleAddToWatchListClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -130,6 +134,8 @@ export default class FilmCard {
 
   _handleMarkAsWatchedClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -142,6 +148,8 @@ export default class FilmCard {
 
   _handleFavouriteClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -151,5 +159,39 @@ export default class FilmCard {
       ),
     );
   }
-}
 
+  _handleCommentDeleteClick(id) {
+    this._changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      Object.assign(
+        {},
+        this._film,
+        {
+          comments: this._film.comments.filter((comment) => comment.id !== id),
+        },
+      ),
+    );
+  }
+
+  _handleAddComment(newCommentEmotion, newCommentText) {
+    const newComment = generateComment();
+    newComment.text = newCommentText;
+    newComment.emotion = newCommentEmotion;
+
+    const updatedComments = this._film.comments.slice();
+    updatedComments.push(newComment);
+
+    this._changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      Object.assign(
+        {},
+        this._film,
+        {
+          comments: updatedComments,
+        },
+      ),
+    );
+  }
+}

@@ -1,8 +1,10 @@
 import Abstract from '../view/abstract.js';
 
 export const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
 };
 
 export const render = (container, child, place = RenderPosition.BEFOREEND) => {
@@ -15,11 +17,17 @@ export const render = (container, child, place = RenderPosition.BEFOREEND) => {
   }
 
   switch (place) {
+    case RenderPosition.BEFOREBEGIN:
+      container.before(child);
+      break;
     case RenderPosition.AFTERBEGIN:
       container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
       container.append(child);
+      break;
+    case RenderPosition.AFTEREND:
+      container.after(child);
       break;
   }
 };
@@ -50,6 +58,10 @@ export const replace = (newChild, oldChild) => {
 };
 
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error('Can remove only components');
   }

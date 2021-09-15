@@ -42,6 +42,7 @@ export default class FilmDetailsNewComment extends SmartView {
     this._data = FilmDetailsNewComment.parseFilmToData(film);
 
     this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
+    this._addCommentHandler = this._addCommentHandler.bind(this);
     this._checkedEmotion = null;
 
     this._setInnerHandlers();
@@ -53,6 +54,7 @@ export default class FilmDetailsNewComment extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this.setAddCommentHandler(this._callback.addComment);
   }
 
   _setInnerHandlers() {
@@ -71,6 +73,19 @@ export default class FilmDetailsNewComment extends SmartView {
     if (evt.target.matches('input[type="radio"]')) {
       this._onEmotionChange(evt.target.value);
     }
+  }
+
+  _addCommentHandler(evt) {
+    if (evt.key === 'Enter' && evt.ctrlKey) {
+      evt.preventDefault();
+      const newCommentText = this.getElement().querySelector('.film-details__comment-input').value;
+      this._callback.addComment(this._data.checkedEmotion, newCommentText);
+    }
+  }
+
+  setAddCommentHandler(callback) {
+    this._callback.addComment = callback;
+    this.getElement().addEventListener('keydown', this._addCommentHandler);
   }
 
   static parseFilmToData(film) {
