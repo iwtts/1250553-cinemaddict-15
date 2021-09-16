@@ -1,5 +1,6 @@
 import HeaderProfileView from './view/header-profile.js';
 import MainNavigationView from './view/main-navigation.js';
+import StatsView from './view/stats.js';
 import FooterStatiscticsView from './view/footer-statistics.js';
 
 import MainFilmsSectionPresenter from './presenter/main-films.js';
@@ -8,7 +9,7 @@ import FilterPresenter from './presenter/filter.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
 
-import { render } from './utils/render.js';
+import { render, RenderPosition } from './utils/render.js';
 import { generateFilm } from './mock/film.js';
 import { FilterType } from './const.js';
 
@@ -73,6 +74,7 @@ const handleNavigationClick = (filterType) => {
 mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
 
 filterPresenter.init();
-mainFilmsSectionPresenter.init();
+//mainFilmsSectionPresenter.init();
 
+render(mainElement, new StatsView(), RenderPosition.AFTEREND);
 render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
