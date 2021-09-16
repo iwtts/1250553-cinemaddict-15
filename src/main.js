@@ -10,6 +10,7 @@ import FilterModel from './model/filter.js';
 
 import { render } from './utils/render.js';
 import { generateFilm } from './mock/film.js';
+import { FilterType } from './const.js';
 
 const FILMS_COUNT = 25;
 
@@ -29,6 +30,49 @@ const footerStatisticsContainerElement = document.querySelector('.footer__statis
 
 render(headerElement, new HeaderProfileView());
 render(mainElement, mainNavigationComponent);
+
+const handleNavigationClick = (filterType) => {
+  //придумать нормальное решение для переключения класса
+  if (filterType === 'stats') {
+    mainNavigationComponent.getElement().querySelector('[data-name="stats"]').classList.add('main-navigation__additional--active');
+    mainNavigationComponent.getElement().querySelectorAll('a').forEach((element) => {
+      element.classList.remove('main-navigation__item--active');
+    });
+  } else {
+    mainNavigationComponent.getElement().querySelector('[data-name="stats"]').classList.remove('main-navigation__additional--active');
+  }
+
+  switch (filterType) {
+    case FilterType.ALL:
+      // Скрыть статистику
+      mainFilmsSectionPresenter.destroy();
+      mainFilmsSectionPresenter.init();
+      break;
+    case FilterType.WATCHLIST:
+      // Скрыть статистику
+      mainFilmsSectionPresenter.destroy();
+      mainFilmsSectionPresenter.init();
+      break;
+    case FilterType.HISTORY:
+      // Скрыть статистику
+      mainFilmsSectionPresenter.destroy();
+      mainFilmsSectionPresenter.init();
+      break;
+    case FilterType.FAVORITES:
+      // Скрыть статистику
+      mainFilmsSectionPresenter.destroy();
+      mainFilmsSectionPresenter.init();
+      break;
+    case FilterType.STATS:
+      mainFilmsSectionPresenter.destroy();
+      // Показать статистику
+      break;
+  }
+};
+
+mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
+
 filterPresenter.init();
 mainFilmsSectionPresenter.init();
+
 render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
