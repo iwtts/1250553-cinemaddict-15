@@ -39,7 +39,7 @@ export const getRandomFishText = () => {
 };
 
 export const getRandomDate = () => {
-  const daysInterval = -3000;
+  const daysInterval = -300;
   const day = dayjs().date((getRandomInteger(daysInterval, dayjs().date())));
   return dayjs(day);
 };

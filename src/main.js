@@ -9,7 +9,7 @@ import FilterPresenter from './presenter/filter.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
 
-import { render, RenderPosition } from './utils/render.js';
+import { RenderPosition, render, remove } from './utils/render.js';
 import { generateFilm } from './mock/film.js';
 import { FilterType } from './const.js';
 
@@ -29,8 +29,10 @@ const mainFilmsSectionPresenter = new MainFilmsSectionPresenter(mainElement, fil
 const filterPresenter = new FilterPresenter(mainNavigationComponent, filterModel, filmsModel);
 const footerStatisticsContainerElement = document.querySelector('.footer__statistics');
 
-render(headerElement, new HeaderProfileView());
+render(headerElement, new HeaderProfileView(films));
 render(mainElement, mainNavigationComponent);
+
+let statsComponent = null;
 
 const handleNavigationClick = (filterType) => {
   //придумать нормальное решение для переключения класса
@@ -45,36 +47,35 @@ const handleNavigationClick = (filterType) => {
 
   switch (filterType) {
     case FilterType.ALL:
-      // Скрыть статистику
+      remove(statsComponent);
       mainFilmsSectionPresenter.destroy();
       mainFilmsSectionPresenter.init();
       break;
     case FilterType.WATCHLIST:
-      // Скрыть статистику
+      remove(statsComponent);
       mainFilmsSectionPresenter.destroy();
       mainFilmsSectionPresenter.init();
       break;
     case FilterType.HISTORY:
-      // Скрыть статистику
+      remove(statsComponent);
       mainFilmsSectionPresenter.destroy();
       mainFilmsSectionPresenter.init();
       break;
     case FilterType.FAVORITES:
-      // Скрыть статистику
+      remove(statsComponent);
       mainFilmsSectionPresenter.destroy();
       mainFilmsSectionPresenter.init();
       break;
     case FilterType.STATS:
       mainFilmsSectionPresenter.destroy();
-      // Показать статистику
+      remove(statsComponent);
+      statsComponent = new StatsView(filmsModel.getFilms());
+      render(mainElement, statsComponent, RenderPosition.AFTEREND);
       break;
   }
 };
 
 mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
-
 filterPresenter.init();
-//mainFilmsSectionPresenter.init();
-
-render(mainElement, new StatsView(), RenderPosition.AFTEREND);
+mainFilmsSectionPresenter.init();
 render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
