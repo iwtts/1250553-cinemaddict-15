@@ -4,6 +4,8 @@ import MainNavigationView from './view/main-navigation';
 import StatsView from './view/stats.js';
 import FooterStatiscticsView from './view/footer-statistics';
 
+import Api from './api.js';
+
 import MainFilmsPresenter from './presenter/main-films';
 import FilterPresenter from './presenter/filter';
 
@@ -16,8 +18,15 @@ import { generateFilm } from './mock/film';
 import { FilterType } from './const';
 
 const FILMS_COUNT = 25;
+const AUTHORIZATION = 'Basic xX2sd3dfSwcX1sa2x';
+const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const films = new Array(FILMS_COUNT).fill().map(generateFilm);
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getFilms().then((films) => {
+  console.log(films);
+});
 
 const headerProfileModel = new HeaderProfileModel();
 
