@@ -1,5 +1,5 @@
-import AbstractObserver from '../utils/abstract-observer.js';
-import { FilterType } from '../const.js';
+import AbstractObserver from '../utils/abstract-observer';
+import { FilterType } from '../const';
 
 export default class Filter extends AbstractObserver {
   constructor() {

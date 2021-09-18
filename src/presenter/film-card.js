@@ -1,5 +1,5 @@
 import FilmCardView from '../view/film-card';
-import FilmDetailsPopupView from '../view/film-details';
+import FilmDetailsView from '../view/film-details';
 import FilmDetailsCommentView from '../view/film-details-comment';
 import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
@@ -37,7 +37,7 @@ export default class FilmCard {
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
     this._filmCardComponent = new FilmCardView(film);
-    this._filmDetailsComponent = new FilmDetailsPopupView(film);
+    this._filmDetailsComponent = new FilmDetailsView(film);
     this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
     const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');

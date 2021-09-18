@@ -1,6 +1,6 @@
 import AbstractView from './abstract';
 
-import { renderGenres, getRuntime, getReleaseDate } from './utils';
+import { renderGenres, getFilmRuntime, getReleaseDate } from './utils';
 import { MAX_DESCRIPTION_LENGTH } from './const';
 
 const createFilmCardTemplate = (film) => {
@@ -15,7 +15,7 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__rating">${totalRating}</p>
     <p class="film-card__info">
       <span class="film-card__year">${getReleaseDate(releaseDate, 'YYYY')}</span>
-      <span class="film-card__duration">${getRuntime(runtime)}</span>
+      <span class="film-card__duration">${getFilmRuntime(runtime)}</span>
       ${renderGenres(genres, 'card')}
     </p>
     <img src="${poster}" alt="${title} poster" class="film-card__poster">

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import he from 'he';
+
 import AbstractView from './abstract';
 
 const createFilmDetailsCommentTemplate = (comment) => {

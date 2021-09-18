@@ -1,12 +1,12 @@
 import AbstractView from './abstract';
 
-const createMainFilmsSectionTemplate = () => (
+const createMainFilmsTemplate = () => (
   `<section class="films">
   </section>`
 );
 
-export default class MainFilmsSection extends AbstractView {
+export default class MainFilms extends AbstractView {
   getTemplate() {
-    return createMainFilmsSectionTemplate();
+    return createMainFilmsTemplate();
   }
 }
