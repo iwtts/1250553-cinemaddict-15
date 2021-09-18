@@ -14,40 +14,28 @@ import FilterModel from './model/filter';
 import HeaderProfileModel from './model/header-profile';
 
 import { RenderPosition, render, remove } from './utils/render';
-import { generateFilm } from './mock/film';
 import { FilterType } from './const';
 
-const FILMS_COUNT = 25;
 const AUTHORIZATION = 'Basic xX2sd3dfSwcX1sa2x';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
-const films = new Array(FILMS_COUNT).fill().map(generateFilm);
-const api = new Api(END_POINT, AUTHORIZATION);
-
-api.getFilms().then((films) => {
-  console.log(films);
-});
-
-const headerProfileModel = new HeaderProfileModel();
-
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
-
-const filterModel = new FilterModel();
-
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
+const footerStatisticsContainerElement = document.querySelector('.footer__statistics');
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
+
+const headerProfileModel = new HeaderProfileModel();
+const filmsModel = new FilmsModel();
+const filterModel = new FilterModel();
+
 const mainNavigationComponent = new MainNavigationView();
 const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel, headerProfileModel);
 const mainFilmsPresenter = new MainFilmsPresenter(mainElement, filmsModel, filterModel);
 const filterPresenter = new FilterPresenter(mainNavigationComponent, filterModel, filmsModel);
-const footerStatisticsContainerElement = document.querySelector('.footer__statistics');
-
-headerProfilePresenter.init();
-render(mainElement, mainNavigationComponent);
 
 let statsComponent = null;
-
 const handleNavigationClick = (filterType) => {
   //придумать нормальное решение для переключения класса
   if (filterType === 'stats') {
@@ -90,6 +78,13 @@ const handleNavigationClick = (filterType) => {
 };
 
 mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
+
+headerProfilePresenter.init();
+render(mainElement, mainNavigationComponent);
 filterPresenter.init();
 mainFilmsPresenter.init();
-render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
+render(footerStatisticsContainerElement, new FooterStatiscticsView(api.getFilms().length));
+
+api.getFilms().then((films) => {
+  filmsModel.setFilms(films);
+});
