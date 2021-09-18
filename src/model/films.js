@@ -29,4 +29,69 @@ export default class Films extends AbstractObserver {
 
     this._notify(updateType, update);
   }
+
+  static adaptToClient(film) {
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+        title: film['film_info']['title'],
+        alternativeTitle: film['film_info']['alternative_title'],
+        totalRating: film['film_info']['total_rating'],
+        poster: film['film_info']['poster'],
+        ageRating: film['film_info']['age_rating'],
+        director: film['film_info']['director'],
+        writers: film['film_info']['writers'],
+        actors: film['film_info']['actors'],
+        releaseDate: film['film_info']['release']['date'],
+        releaseCountry: film['film_info']['release']['release_country'],
+        runtime: film['film_info']['runtime'],
+        genres: film['film_info']['genre'],
+        description: film['film_info']['description'],
+        isInWatchList: film['user_details']['watchlist'],
+        isAlreadyWatched: film['user_details']['already_watched'],
+        watchingDate: film['user_details']['watching_date'],
+        isFavorite: film['user_details']['favorite'],
+      },
+    );
+
+    delete adaptedFilm['film_info'];
+    delete adaptedFilm['user_details'];
+
+    return adaptedFilm;
+  }
+
+  static adaptToServer(film) {
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+        'film_info': {
+          'title': film.title,
+          'alternative_title': film.alternativeTitle,
+          'total_rating': film.totalRating,
+          'poster': film.poster,
+          'age_rating': film.ageRating,
+          'director': film.director,
+          'writers': film.writers,
+          'actors': film.actors,
+          'release': {
+            'date': film.releaseDate,
+            'release_country': film.releaseCountry,
+          },
+          'runtime': film.runtime,
+          'genre': film.genres,
+          'description': film.description,
+        },
+        'user_details': {
+          'watchlist': film.isInWatchList,
+          'already_watched': film.isAlreadyWatched,
+          'watching_date': film.watchingDate,
+          'favorite': film.isFavorite,
+        },
+      },
+    );
+
+    return adaptedFilm;
+  }
 }
