@@ -32,7 +32,7 @@ const filterModel = new FilterModel();
 
 const mainNavigationComponent = new MainNavigationView();
 const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel, headerProfileModel);
-const mainFilmsPresenter = new MainFilmsPresenter(mainElement, filmsModel, filterModel);
+const mainFilmsPresenter = new MainFilmsPresenter(mainElement, filmsModel, filterModel, api);
 const filterPresenter = new FilterPresenter(mainNavigationComponent, filterModel, filmsModel);
 
 let statsComponent = null;
@@ -79,16 +79,19 @@ const handleNavigationClick = (filterType) => {
 
 mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
 
-headerProfilePresenter.init();
 render(mainElement, mainNavigationComponent);
+headerProfilePresenter.init();
 filterPresenter.init();
-mainFilmsPresenter.init();
-render(footerStatisticsContainerElement, new FooterStatiscticsView(api.getFilms().length));
 
 api.getFilms()
-  .then((movies) => {
-    filmsModel.setFilms(UpdateType.INIT, movies);
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+    mainFilmsPresenter.init();
+    render(footerStatisticsContainerElement, new FooterStatiscticsView(filmsModel.getFilms().length));
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    mainFilmsPresenter.init();
   });
+
+

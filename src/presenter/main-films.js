@@ -14,7 +14,7 @@ import { sortByDate, sortByRating } from '../utils/common';
 const FILMS_COUNT_PER_STEP = 5;
 
 export default class MainFilms {
-  constructor(container, filmsModel, filterModel) {
+  constructor(container, filmsModel, filterModel, api) {
     this._container = container;
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
@@ -24,6 +24,7 @@ export default class MainFilms {
     this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
+    this._api = api;
 
     this._mainSortComponent = null;
     this._showMoreButtonComponent = null;
@@ -75,7 +76,9 @@ export default class MainFilms {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
         break;
       case UserAction.DELETE_COMMENT:
         this._filmsModel.updateFilm(updateType, update);
