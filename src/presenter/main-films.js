@@ -132,7 +132,7 @@ export default class MainFilms {
   }
 
   _renderFilmCard(film) {
-    const filmCardPresenter = new FilmCardPresenter(this._filmsListContainerElement, this._handleViewAction);
+    const filmCardPresenter = new FilmCardPresenter(this._filmsListContainerElement, this._handleViewAction, this._api);
     filmCardPresenter.init(film);
     this._filmCardPresenter.set(film.id, filmCardPresenter);
   }
@@ -205,13 +205,13 @@ export default class MainFilms {
   }
 
   _renderMainFilms() {
-    const films = this._getFilms();
-    const filmsCount = films.length;
-
     if (this._isLoading) {
       this._renderLoading();
       return;
     }
+
+    const films = this._getFilms();
+    const filmsCount = films.length;
 
     if (filmsCount === 0) {
       this._renderFilmsListEmpty();

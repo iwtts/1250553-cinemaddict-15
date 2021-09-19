@@ -25,7 +25,6 @@ const footerStatisticsContainerElement = document.querySelector('.footer__statis
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
-
 const headerProfileModel = new HeaderProfileModel();
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
@@ -82,16 +81,15 @@ mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
 render(mainElement, mainNavigationComponent);
 headerProfilePresenter.init();
 filterPresenter.init();
+mainFilmsPresenter.init();
+render(footerStatisticsContainerElement, new FooterStatiscticsView(filmsModel.getFilms().length));
 
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
-    mainFilmsPresenter.init();
-    render(footerStatisticsContainerElement, new FooterStatiscticsView(filmsModel.getFilms().length));
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
-    mainFilmsPresenter.init();
   });
 
 
