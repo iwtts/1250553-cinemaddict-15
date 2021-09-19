@@ -3,6 +3,7 @@ import MainFilmsView from '../view/main-films';
 import FilmsListEmptyView from '../view/films-list-empty';
 import FilmsListView from '../view/films-list';
 import ShowMoreButtonView from '../view/show-more-button';
+import LoadingView from '../view/loading.js';
 import FilmCardPresenter from './film-card';
 
 import { filter } from '../utils/filter';
@@ -22,6 +23,7 @@ export default class MainFilms {
     this._filmCardPresenter = new Map();
     this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._mainSortComponent = null;
     this._showMoreButtonComponent = null;
@@ -29,6 +31,7 @@ export default class MainFilms {
 
     this._mainFilmsComponent = new MainFilmsView();
     this._filmsListComponent = new FilmsListView();
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -96,6 +99,11 @@ export default class MainFilms {
         this._clearMainFilms({resetRenderedFilmCardsCount: true, resetSortType: true});
         this._renderMainFilms();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderMainFilms();
+        break;
     }
   }
 
@@ -128,6 +136,10 @@ export default class MainFilms {
 
   _renderFilmCards(films) {
     films.forEach((film) => this._renderFilmCard(film));
+  }
+
+  _renderLoading() {
+    render(this._mainFilmsComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderFilmsListEmpty() {
@@ -170,6 +182,7 @@ export default class MainFilms {
     this._filmCardPresenter.forEach((presenter) => presenter.destroy());
     this._filmCardPresenter.clear();
 
+    remove(this._loadingComponent);
     remove(this._mainSortComponent);
     remove(this._showMoreButtonComponent);
 
@@ -191,6 +204,11 @@ export default class MainFilms {
   _renderMainFilms() {
     const films = this._getFilms();
     const filmsCount = films.length;
+
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
 
     if (filmsCount === 0) {
       this._renderFilmsListEmpty();

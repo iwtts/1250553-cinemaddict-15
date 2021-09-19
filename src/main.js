@@ -86,8 +86,8 @@ mainFilmsPresenter.init();
 render(footerStatisticsContainerElement, new FooterStatiscticsView(api.getFilms().length));
 
 api.getFilms()
-  .then((films) => {
-    filmsModel.setFilms(UpdateType.INIT, films);
+  .then((movies) => {
+    filmsModel.setFilms(UpdateType.INIT, movies);
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
