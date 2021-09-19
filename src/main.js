@@ -14,7 +14,7 @@ import FilterModel from './model/filter';
 import HeaderProfileModel from './model/header-profile';
 
 import { RenderPosition, render, remove } from './utils/render';
-import { FilterType } from './const';
+import { FilterType, UpdateType } from './const';
 
 const AUTHORIZATION = 'Basic xX2sd3dfSwcX1sa2x';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
@@ -85,6 +85,10 @@ filterPresenter.init();
 mainFilmsPresenter.init();
 render(footerStatisticsContainerElement, new FooterStatiscticsView(api.getFilms().length));
 
-api.getFilms().then((films) => {
-  filmsModel.setFilms(films);
-});
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });

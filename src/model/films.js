@@ -6,8 +6,10 @@ export default class Films extends AbstractObserver {
     this._films = [];
   }
 
-  setFilms(films) {
+  setFilms(updateType, films) {
     this._films = films.slice();
+
+    this._notify(updateType);
   }
 
   getFilms() {
