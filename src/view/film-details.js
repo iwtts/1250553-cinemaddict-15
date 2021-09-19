@@ -1,8 +1,8 @@
 import AbstractView from './abstract';
 
-import { renderGenres, getRuntime, getReleaseDate } from './utils';
+import { renderGenres, getFilmRuntime, getReleaseDate } from './utils';
 
-const createFilmDetailsPopupTemplate = (film) => {
+const createFilmDetailsTemplate = (film) => {
   const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = film;
 
   const defineButtonActiveState = (condition) => {
@@ -53,7 +53,7 @@ const createFilmDetailsPopupTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${getRuntime(runtime)}</td>
+                <td class="film-details__cell">${getFilmRuntime(runtime)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -85,7 +85,7 @@ const createFilmDetailsPopupTemplate = (film) => {
   </section>`;
 };
 
-export default class FilmDetailsPopup extends AbstractView {
+export default class FilmDetails extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
@@ -98,7 +98,7 @@ export default class FilmDetailsPopup extends AbstractView {
   }
 
   getTemplate() {
-    return createFilmDetailsPopupTemplate(this._film);
+    return createFilmDetailsTemplate(this._film);
   }
 
   _addToWatchListClickHandler(evt) {
@@ -108,12 +108,12 @@ export default class FilmDetailsPopup extends AbstractView {
 
   _markAsWatchedClickHandler(evt) {
     evt.preventDefault();
-    this._callback._markAsWatchedClick();
+    this._callback.markAsWatchedClick();
   }
 
   _favouriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback._favouriteClick();
+    this._callback.favouriteClick();
   }
 
   _closeFilmDetailsClickHandler(evt) {
@@ -128,13 +128,13 @@ export default class FilmDetailsPopup extends AbstractView {
   }
 
   setMarkAsWatchedClickHandler(callback) {
-    this._callback._markAsWatchedClick = callback;
+    this._callback.markAsWatchedClick = callback;
 
     this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._markAsWatchedClickHandler);
   }
 
   setFavouriteClickHandler(callback) {
-    this._callback._favouriteClick = callback;
+    this._callback.favouriteClick = callback;
 
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._favouriteClickHandler);
   }

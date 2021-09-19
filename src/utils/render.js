@@ -1,4 +1,4 @@
-import Abstract from '../view/abstract.js';
+import Abstract from '../view/abstract';
 
 export const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
@@ -32,13 +32,6 @@ export const render = (container, child, place = RenderPosition.BEFOREEND) => {
   }
 };
 
-export const createElement = (template) => {
-  const newElement = document.createElement('div'); // 1
-  newElement.innerHTML = template; // 2
-
-  return newElement.firstChild; // 3
-};
-
 export const replace = (newChild, oldChild) => {
   if (oldChild instanceof Abstract) {
     oldChild = oldChild.getElement();
@@ -68,4 +61,11 @@ export const remove = (component) => {
 
   component.getElement().remove();
   component.removeElement();
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement('div'); // 1
+  newElement.innerHTML = template; // 2
+
+  return newElement.firstChild; // 3
 };
