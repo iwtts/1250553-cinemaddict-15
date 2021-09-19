@@ -37,6 +37,8 @@ export default class Films extends AbstractObserver {
       {},
       film,
       {
+        id: film['id'],
+        comments: film['comments'],
         title: film['film_info']['title'],
         alternativeTitle: film['film_info']['alternative_title'],
         totalRating: film['film_info']['total_rating'],
@@ -57,6 +59,7 @@ export default class Films extends AbstractObserver {
       },
     );
 
+    delete adaptedFilm['id'];
     delete adaptedFilm['film_info'];
     delete adaptedFilm['user_details'];
 
@@ -68,6 +71,8 @@ export default class Films extends AbstractObserver {
       {},
       film,
       {
+        'id': film.id,
+        'comments': film.comments,
         'film_info': {
           'title': film.title,
           'alternative_title': film.alternativeTitle,
@@ -93,6 +98,26 @@ export default class Films extends AbstractObserver {
         },
       },
     );
+
+    delete adaptedFilm.id;
+    delete adaptedFilm.comments;
+    delete adaptedFilm.title;
+    delete adaptedFilm.alternativeTitle;
+    delete adaptedFilm.totalRating;
+    delete adaptedFilm.poster;
+    delete adaptedFilm.ageRating;
+    delete adaptedFilm.director;
+    delete adaptedFilm.writers;
+    delete adaptedFilm.actors;
+    delete adaptedFilm.releaseDate;
+    delete adaptedFilm.releaseCountry;
+    delete adaptedFilm.runtime;
+    delete adaptedFilm.genres;
+    delete adaptedFilm.description;
+    delete adaptedFilm.isInWatchList;
+    delete adaptedFilm.isAlreadyWatched;
+    delete adaptedFilm.watchingDate;
+    delete adaptedFilm.isFavorite;
 
     return adaptedFilm;
   }
