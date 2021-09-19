@@ -4,6 +4,8 @@ import MainNavigationView from './view/main-navigation';
 import StatsView from './view/stats.js';
 import FooterStatiscticsView from './view/footer-statistics';
 
+import Api from './api.js';
+
 import MainFilmsPresenter from './presenter/main-films';
 import FilterPresenter from './presenter/filter';
 
@@ -12,33 +14,27 @@ import FilterModel from './model/filter';
 import HeaderProfileModel from './model/header-profile';
 
 import { RenderPosition, render, remove } from './utils/render';
-import { generateFilm } from './mock/film';
-import { FilterType } from './const';
+import { FilterType, UpdateType } from './const';
 
-const FILMS_COUNT = 25;
-
-const films = new Array(FILMS_COUNT).fill().map(generateFilm);
-
-const headerProfileModel = new HeaderProfileModel();
-
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
-
-const filterModel = new FilterModel();
+const AUTHORIZATION = 'Basic xX2sd3dfSwcX1sa2x';
+const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
-const mainNavigationComponent = new MainNavigationView();
-const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel, headerProfileModel);
-const mainFilmsPresenter = new MainFilmsPresenter(mainElement, filmsModel, filterModel);
-const filterPresenter = new FilterPresenter(mainNavigationComponent, filterModel, filmsModel);
 const footerStatisticsContainerElement = document.querySelector('.footer__statistics');
 
-headerProfilePresenter.init();
-render(mainElement, mainNavigationComponent);
+const api = new Api(END_POINT, AUTHORIZATION);
+
+const headerProfileModel = new HeaderProfileModel();
+const filmsModel = new FilmsModel();
+const filterModel = new FilterModel();
+
+const mainNavigationComponent = new MainNavigationView();
+const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel, headerProfileModel);
+const mainFilmsPresenter = new MainFilmsPresenter(mainElement, filmsModel, filterModel, api);
+const filterPresenter = new FilterPresenter(mainNavigationComponent, filterModel, filmsModel);
 
 let statsComponent = null;
-
 const handleNavigationClick = (filterType) => {
   //придумать нормальное решение для переключения класса
   if (filterType === 'stats') {
@@ -81,6 +77,19 @@ const handleNavigationClick = (filterType) => {
 };
 
 mainNavigationComponent.setNavigationClickHandler(handleNavigationClick);
+
+render(mainElement, mainNavigationComponent);
+headerProfilePresenter.init();
 filterPresenter.init();
 mainFilmsPresenter.init();
-render(footerStatisticsContainerElement, new FooterStatiscticsView(films.length));
+render(footerStatisticsContainerElement, new FooterStatiscticsView(filmsModel.getFilms().length));
+
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });
+
+

@@ -8,14 +8,16 @@ import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class FilmCard {
-  constructor(container, changeData) {
+  constructor(container, changeData, api) {
     this._container = container;
     this._changeData = changeData;
+    this._api = api;
 
     this._bodyElement =  document.querySelector('body');
 
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
+    this._comments = [];
 
     this._handleAddToWatchListClick = this._handleAddToWatchListClick.bind(this);
     this._handleMarkAsWatchedClick = this._handleMarkAsWatchedClick.bind(this);
@@ -39,6 +41,8 @@ export default class FilmCard {
     this._filmCardComponent = new FilmCardView(film);
     this._filmDetailsComponent = new FilmDetailsView(film);
     this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
+
+    //this._api.getComments(this._film.id);
 
     const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
 
