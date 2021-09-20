@@ -1,9 +1,68 @@
-import AbstractView from './abstract';
+import dayjs from 'dayjs';
+import he from 'he';
+
+import SmartView from './abstract';
 
 import { getFilmRuntime, getReleaseDate } from './utils';
 
-const createFilmDetailsTemplate = (film) => {
-  const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = film;
+const createCommentTemplate = (comment) => {
+  const {id, emotion, date, text, author, isDisabled} = comment;
+
+  const commentDate = dayjs(date).format('YYYY/MM/DD HH:mm');
+
+  return `<li class="film-details__comment">
+    <span class="film-details__comment-emoji">
+      <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+    </span>
+    <div>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${author}</span>
+        <span class="film-details__comment-day">${commentDate}</span>
+        <button class="film-details__comment-delete" data-id="${id} ${isDisabled ? 'disabled' : ''}">${isDisabled ? 'Deleting...' : 'Delete'}</button>
+      </p>
+    </div>
+  </li>`;
+};
+
+const createNewCommentTemplate = (data) => {
+  const { checkedEmotion, isDisabled } = data;
+
+  return `<div class="film-details__new-comment">
+    <div class="film-details__add-emoji-label">
+      ${checkedEmotion ? `<img src="images/emoji/${checkedEmotion}.png" width="55" height="55" alt="emoji-${checkedEmotion}">` : ''}
+    </div>
+
+    <label class="film-details__comment-label">
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"${isDisabled ? 'disabled' : ''}></textarea>
+    </label>
+
+    <div class="film-details__emoji-list">
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile"${isDisabled ? 'disabled' : ''}>
+      <label class="film-details__emoji-label" for="emoji-smile">
+        <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+      </label>
+
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping"${isDisabled ? 'disabled' : ''}>
+      <label class="film-details__emoji-label" for="emoji-sleeping">
+        <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
+      </label>
+
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke"${isDisabled ? 'disabled' : ''}>
+      <label class="film-details__emoji-label" for="emoji-puke">
+        <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
+      </label>
+
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry"${isDisabled ? 'disabled' : ''}>
+      <label class="film-details__emoji-label" for="emoji-angry">
+        <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
+      </label>
+    </div>
+  </div>`;
+};
+
+const createFilmDetailsTemplate = (data) => {
+  const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = data;
 
   const defineButtonActiveState = (condition) => {
     if (condition) {
@@ -12,6 +71,11 @@ const createFilmDetailsTemplate = (film) => {
   };
 
   const genresHeading = genres.length > 1 ? 'Genres' : 'Genre';
+
+  const commentsListTemplate = comments
+    .slice()
+    .map((comment) => createCommentTemplate(comment))
+    .join('');
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -76,29 +140,55 @@ const createFilmDetailsTemplate = (film) => {
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-          <ul class="film-details__comments-list">
-          </ul>
-
+          <ul class="film-details__comments-list">${commentsListTemplate}</ul>
+          ${createNewCommentTemplate(data)}
         </section>
       </div>
     </form>
   </section>`;
 };
 
-export default class FilmDetails extends AbstractView {
-  constructor(film) {
+export default class FilmDetails extends SmartView {
+  constructor(film, comments) {
     super();
-    this._film = film;
+    this._data = FilmDetails.parseToData(film, comments);
 
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
     this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
 
     this._closeFilmDetailsClickHandler = this._closeFilmDetailsClickHandler.bind(this);
+
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
+
+    this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
+    this._addCommentHandler = this._addCommentHandler.bind(this);
+    this._checkedEmotion = null;
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createFilmDetailsTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
+    this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
+    this.setFavouriteClickHandler(this._callback.favouriteClick);
+
+    this.setCloseFilmDetailsClickHandler(this._callback.closeFilmDetailsClick);
+
+    this.setCommentDeleteClickHandle(this._callback.commentDeleteClick);
+
+    this._setInnerHandlers();
+    this.setAddCommentHandler(this._callback.addComment);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('change', this._emotionChangeHandler);
   }
 
   _addToWatchListClickHandler(evt) {
@@ -119,6 +209,37 @@ export default class FilmDetails extends AbstractView {
   _closeFilmDetailsClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeFilmDetailsClick();
+  }
+
+  _commentDeleteClickHandler(evt) {
+    if (evt.target.matches('.film-details__comment-delete')){
+      this._callback.commentDeleteClick(evt.target.dataset.id);
+    }
+  }
+
+  _onEmotionChange(emotion) {
+    this.updateData({
+      checkedEmotion: emotion,
+    });
+  }
+
+  _emotionChangeHandler(evt) {
+    if (evt.target.matches('input[type="radio"]')) {
+      this._onEmotionChange(evt.target.value);
+    }
+  }
+
+  _addCommentHandler(evt) {
+    if (evt.key === 'Enter' && evt.ctrlKey || evt.key === 'Enter' && evt.metaKey) {
+      evt.preventDefault();
+      const newCommentText = this.getElement().querySelector('.film-details__comment-input').value;
+      this._callback.addComment(this._data.checkedEmotion, newCommentText);
+    }
+  }
+
+  setAddCommentHandler(callback) {
+    this._callback.addComment = callback;
+    this.getElement().addEventListener('keydown', this._addCommentHandler);
   }
 
   setAddToWatchListClickHandler(callback) {
@@ -143,5 +264,28 @@ export default class FilmDetails extends AbstractView {
     this._callback.closeFilmDetailsClick = callback;
 
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeFilmDetailsClickHandler);
+  }
+
+  setCommentDeleteClickHandler(callback) {
+    this._callback.commentDeleteClick = callback;
+    this.getElement().addEventListener('click', this._commentDeleteClickHandler);
+  }
+
+  static parseToData(film, comments) {
+    return Object.assign(
+      {},
+      film,
+      {
+        selectedCommentEmotion: null,
+        isDisabled: false,
+        comments: comments.map((comment) => Object.assign(
+          {},
+          comment,
+          {
+            isDisabled: false,
+          },
+        )),
+      },
+    );
   }
 }

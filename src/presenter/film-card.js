@@ -1,7 +1,5 @@
 import FilmCardView from '../view/film-card';
 import FilmDetailsView from '../view/film-details';
-import FilmDetailsCommentView from '../view/film-details-comment';
-import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
 import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
@@ -45,25 +43,7 @@ export default class FilmCard {
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
     this._filmCardComponent = new FilmCardView(film);
-    this._filmDetailsComponent = new FilmDetailsView(film);
-    this._filmDetailsNewCommentComponent = new FilmDetailsNewCommentView();
-    this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
-
-
-    const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
-
-    this._api.getComments(this._film.id)
-      .then((comments) => {
-        for (let i = 0; i < comments.length; i++) {
-          const filmDetailsCommentComponent = new FilmDetailsCommentView(comments[i]);
-          render(this._filmDetailsCommentsList, filmDetailsCommentComponent);
-          filmDetailsCommentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-        }
-      });
-
-
-    render(filmDetailsCommentWrap, this._filmDetailsNewCommentComponent);
-    this._filmDetailsNewCommentComponent.setAddCommentHandler(this._handleAddComment);
+    this._filmDetailsComponent = new FilmDetailsView(this._film, this._comments);
 
     this._filmCardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._filmCardComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
@@ -74,6 +54,10 @@ export default class FilmCard {
     this._filmDetailsComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._filmDetailsComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
     this._filmDetailsComponent.setFavouriteClickHandler(this._handleFavouriteClick);
+
+    this._filmDetailsComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
+    this._filmDetailsComponent.setAddCommentHandler(this._handleAddComment);
+
 
     if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
       render(this._container, this._filmCardComponent);
@@ -104,27 +88,40 @@ export default class FilmCard {
 
     switch (state) {
       case State.SAVING:
-        this._filmDetailsNewCommentComponent.updateData({
+        this._filmDetailsComponent.updateData({
           isDisabled: true,
         });
         break;
       case State.DELETING:
-        this._filmDetailsCommentComponent.updateData({
-          isDisabled: true,
+        this._filmDetailsComponent.updateData({
+          comments: this._comments.map((comment) => Object.assign(
+            {},
+            comment,
+            {
+              isDisabled: true,
+            },
+          )),
         });
         break;
     }
   }
 
   _openFilmDetails() {
-    if (this._bodyElement.lastElementChild.className === 'film-details') {
-      this._bodyElement.lastElementChild.remove();
-    }
+    const initFilmdDetails = (comments) => {
+      this._comments = comments.slice();
+      if (this._bodyElement.lastElementChild.className === 'film-details') {
+        this._bodyElement.lastElementChild.remove();
+      }
+      this._bodyElement.appendChild(this._filmDetailsComponent.getElement());
+      this._bodyElement.classList.add('hide-overflow');
 
-    this._bodyElement.appendChild(this._filmDetailsComponent.getElement());
-    this._bodyElement.classList.add('hide-overflow');
+      document.addEventListener('keydown', this._escKeyDownHandler);
+    };
 
-    document.addEventListener('keydown', this._escKeyDownHandler);
+    this._api.getComments(this._film.id)
+      .then((comments) => {
+        initFilmdDetails(comments);
+      });
   }
 
   _closeFilmDetails() {
