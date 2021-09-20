@@ -50,14 +50,13 @@ const navigationPresenter = new NavigationPresenter(mainElement, filterModel, fi
 headerProfilePresenter.init();
 navigationPresenter.init();
 mainFilmsPresenter.init();
-render(footerStatisticsContainerElement, new FooterStatiscticsView(filmsModel.getFilms().length));
 
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
+    render(footerStatisticsContainerElement, new FooterStatiscticsView(filmsModel.getFilms().length));
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
   });
-
 

@@ -77,6 +77,8 @@ const createFilmDetailsTemplate = (data) => {
     .map((comment) => createCommentTemplate(comment))
     .join('');
 
+  const newCommentTemplate = createNewCommentTemplate(data);
+
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
@@ -141,7 +143,7 @@ const createFilmDetailsTemplate = (data) => {
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
           <ul class="film-details__comments-list">${commentsListTemplate}</ul>
-          ${createNewCommentTemplate(data)}
+          ${newCommentTemplate}
         </section>
       </div>
     </form>
@@ -163,7 +165,6 @@ export default class FilmDetails extends SmartView {
 
     this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
     this._addCommentHandler = this._addCommentHandler.bind(this);
-    this._checkedEmotion = null;
 
     this._setInnerHandlers();
   }
@@ -237,6 +238,29 @@ export default class FilmDetails extends SmartView {
     }
   }
 
+  setCommentDeleteState(id, state) {
+    this.updateData({
+      comments: this._data.comments.map((comment) => {
+        if (comment.id === id) {
+          comment.isDisabled = state;
+        }
+        return comment;
+      }),
+    });
+  }
+
+  setAddCommentComment(state) {
+    this.updateData(
+      {
+        isDisabled: state,
+      },
+    );
+  }
+
+  setErrorAction() {
+
+  }
+
   setAddCommentHandler(callback) {
     this._callback.addComment = callback;
     this.getElement().addEventListener('keydown', this._addCommentHandler);
@@ -276,7 +300,7 @@ export default class FilmDetails extends SmartView {
       {},
       film,
       {
-        selectedCommentEmotion: null,
+        checkedEmotion: null,
         isDisabled: false,
         comments: comments.map((comment) => Object.assign(
           {},

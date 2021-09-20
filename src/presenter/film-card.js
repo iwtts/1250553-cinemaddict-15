@@ -8,6 +8,7 @@ export const State = {
   DEFAULT: 'DEFAULT',
   DELETING: 'DELETING',
   SAVING: 'SAVING',
+  ABORTING: 'ABORTING',
 };
 
 
@@ -43,20 +44,11 @@ export default class FilmCard {
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
     this._filmCardComponent = new FilmCardView(film);
-    this._filmDetailsComponent = new FilmDetailsView(this._film, this._comments);
 
     this._filmCardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._filmCardComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
     this._filmCardComponent.setFavouriteClickHandler(this._handleFavouriteClick);
     this._filmCardComponent.setOpenFilmDetailsClickHandler(this._handleOpenFilmDetailsClick);
-
-    this._filmDetailsComponent.setCloseFilmDetailsClickHandler(this._handleCloseFilmDetailsClick);
-    this._filmDetailsComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
-    this._filmDetailsComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
-    this._filmDetailsComponent.setFavouriteClickHandler(this._handleFavouriteClick);
-
-    this._filmDetailsComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-    this._filmDetailsComponent.setAddCommentHandler(this._handleAddComment);
 
 
     if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
@@ -103,24 +95,46 @@ export default class FilmCard {
           )),
         });
         break;
+      case State.ABORTING:
+        this._filmCardComponent.shake(this._resetFilmDetailsState);
+        this._filmDetailsComponent.shake(this._resetFilmDetailsState);
+        break;
     }
   }
 
+  _resetFilmDetailsState() {
+    this._filmDetailsComponent.updateData({
+      isDisabled: false,
+      comments: this.comments.map((comment) => Object.assign(
+        comment,
+        {
+          isDisabled: false,
+        },
+      )),
+    });
+  }
+
   _openFilmDetails() {
-    const initFilmdDetails = (comments) => {
-      this._comments = comments.slice();
-      if (this._bodyElement.lastElementChild.className === 'film-details') {
-        this._bodyElement.lastElementChild.remove();
-      }
-      this._bodyElement.appendChild(this._filmDetailsComponent.getElement());
-      this._bodyElement.classList.add('hide-overflow');
-
-      document.addEventListener('keydown', this._escKeyDownHandler);
-    };
-
     this._api.getComments(this._film.id)
       .then((comments) => {
-        initFilmdDetails(comments);
+        this._comments = comments.slice();
+        this._filmDetailsComponent = new FilmDetailsView(this._film, this._comments);
+
+        this._filmDetailsComponent.setCloseFilmDetailsClickHandler(this._handleCloseFilmDetailsClick);
+        this._filmDetailsComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
+        this._filmDetailsComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
+        this._filmDetailsComponent.setFavouriteClickHandler(this._handleFavouriteClick);
+
+        this._filmDetailsComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
+        this._filmDetailsComponent.setAddCommentHandler(this._handleAddComment);
+
+        if (this._bodyElement.lastElementChild.className === 'film-details') {
+          this._bodyElement.lastElementChild.remove();
+        }
+        this._bodyElement.appendChild(this._filmDetailsComponent.getElement());
+        this._bodyElement.classList.add('hide-overflow');
+
+        document.addEventListener('keydown', this._escKeyDownHandler);
       });
   }
 
@@ -189,6 +203,7 @@ export default class FilmCard {
   }
 
   _handleCommentDeleteClick(id) {
+    this._filmDetailsComponent.setCommentDeleteState(id, true);
     this._api.deleteComment(id)
       .then(() => {
         this._comments = this._comments.filter((comment) => comment.id !== id.toString());
@@ -201,11 +216,15 @@ export default class FilmCard {
             {
               comments: this._film.comments.filter((commentId) => commentId !== id),
             },
-          ));
+          ))
+          .catch(() => {
+            this._filmDetailsComponent.shake(this._resetFilmDetailsState);
+          });
       });
   }
 
   _handleAddComment(newCommentEmotion, newCommentText) {
+    this._filmDetailsComponent.setAddCommentComment(true);
     this._api.addComment(this._film.id, {
       text: newCommentText,
       emotion: newCommentEmotion,
@@ -216,6 +235,9 @@ export default class FilmCard {
         UpdateType.PATCH,
         data.film,
       );
-    });
+    })
+      .catch(() => {
+        this._filmDetailsComponent.shake(this._resetFilmDetailsState);
+      });
   }
 }
