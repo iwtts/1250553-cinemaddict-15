@@ -59,7 +59,6 @@ export default class Films extends AbstractObserver {
       },
     );
 
-    //delete adaptedFilm['id'];
     delete adaptedFilm['film_info'];
     delete adaptedFilm['user_details'];
 
@@ -99,8 +98,6 @@ export default class Films extends AbstractObserver {
       },
     );
 
-    //delete adaptedFilm.id;
-    //delete adaptedFilm.comments;
     delete adaptedFilm.title;
     delete adaptedFilm.alternativeTitle;
     delete adaptedFilm.totalRating;

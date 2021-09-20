@@ -3,7 +3,6 @@ import FilmDetailsView from '../view/film-details';
 import FilmDetailsCommentView from '../view/film-details-comment';
 import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 
-import { generateComment } from '../mock/film';
 import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
 
@@ -167,37 +166,33 @@ export default class FilmCard {
   }
 
   _handleCommentDeleteClick(id) {
-    this._changeData(
-      UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._film,
-        {
-          comments: this._film.comments.filter((comment) => comment.id !== id),
-        },
-      ),
-    );
+    this._api.deleteComment(id)
+      .then(() => {
+        this._comments = this._comments.filter((comment) => comment.id !== id.toString());
+        this._changeData(
+          UserAction.DELETE_COMMENT,
+          UpdateType.PATCH,
+          Object.assign(
+            {},
+            this._film,
+            {
+              comments: this._film.comments.filter((commentId) => commentId !== id),
+            },
+          ));
+      });
   }
 
   _handleAddComment(newCommentEmotion, newCommentText) {
-    const newComment = generateComment();
-    newComment.text = newCommentText;
-    newComment.emotion = newCommentEmotion;
-
-    const updatedComments = this._film.comments.slice();
-    updatedComments.push(newComment);
-
-    this._changeData(
-      UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._film,
-        {
-          comments: updatedComments,
-        },
-      ),
-    );
+    this._api.addComment(this._film.id, {
+      text: newCommentText,
+      emotion: newCommentEmotion,
+    }).then((data) => {
+      this._comments = data.comments.slice();
+      this._changeData(
+        UserAction.ADD_COMMENT,
+        UpdateType.PATCH,
+        data.film,
+      );
+    });
   }
 }
