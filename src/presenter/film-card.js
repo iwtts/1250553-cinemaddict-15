@@ -126,7 +126,7 @@ export default class FilmCard {
   _handleAddToWatchListClick() {
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -140,7 +140,7 @@ export default class FilmCard {
   _handleMarkAsWatchedClick() {
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -154,7 +154,7 @@ export default class FilmCard {
   _handleFavouriteClick() {
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,

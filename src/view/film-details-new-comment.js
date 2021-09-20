@@ -76,7 +76,7 @@ export default class FilmDetailsNewComment extends SmartView {
   }
 
   _addCommentHandler(evt) {
-    if (evt.key === 'Enter' && evt.ctrlKey) {
+    if (evt.key === 'Enter' && evt.ctrlKey || evt.key === 'Enter' && evt.metaKey) {
       evt.preventDefault();
       const newCommentText = this.getElement().querySelector('.film-details__comment-input').value;
       this._callback.addComment(this._data.checkedEmotion, newCommentText);

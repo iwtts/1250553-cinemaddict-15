@@ -56,6 +56,10 @@ export default class Navigation {
       this._navigationComponent
         .getElement().querySelector('.main-navigation__additional')
         .classList.add('main-navigation__additional--active');
+      this._navigationComponent
+        .getElement().querySelectorAll('.main-navigation__item').forEach((element) => {
+          element.classList.remove('main-navigation__item--active');
+        });
       this._showStats();
     } else {
       this._showFilms();
