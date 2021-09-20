@@ -9,7 +9,6 @@ export default class Comments {
         emotion: comment['emotion'],
         text: comment['comment'],
         date: comment['date'],
-        isDisabled: true,
       },
     );
 

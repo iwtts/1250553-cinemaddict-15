@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import he from 'he';
 
-import AbstractView from './abstract';
+import SmartView from './abstract';
 
-const createFilmDetailsCommentTemplate = (comment) => {
-  const {id, emotion, date, text, author, isDisabled} = comment;
+const createFilmDetailsCommentTemplate = (data) => {
+  const {id, emotion, date, text, author, isDisabled} = data;
 
   const commentDate = dayjs(date).format('YYYY/MM/DD HH:mm');
 
@@ -23,16 +23,20 @@ const createFilmDetailsCommentTemplate = (comment) => {
   </li>`;
 };
 
-export default class FilmDetailsComment extends AbstractView {
+export default class FilmDetailsComment extends SmartView {
   constructor(comment) {
     super();
-    this.comment = comment;
+    this._data = FilmDetailsComment.parseToData(comment);
 
     this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilmDetailsCommentTemplate(this.comment);
+    return createFilmDetailsCommentTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this. setCommentDeleteClickHandle(this._callback.commentDeleteClick);
   }
 
   _commentDeleteClickHandler(evt) {
@@ -43,5 +47,15 @@ export default class FilmDetailsComment extends AbstractView {
   setCommentDeleteClickHandler(callback) {
     this._callback.commentDeleteClick = callback;
     this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._commentDeleteClickHandler);
+  }
+
+  static parseToData(comment) {
+    return Object.assign(
+      {},
+      comment,
+      {
+        isDisabled: false,
+      },
+    );
   }
 }

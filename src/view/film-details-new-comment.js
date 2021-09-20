@@ -37,9 +37,9 @@ const createFilmDetailsNewCommentTemplate = (data) => {
 };
 
 export default class FilmDetailsNewComment extends SmartView {
-  constructor(film) {
+  constructor(comment) {
     super();
-    this._data = FilmDetailsNewComment.parseFilmToData(film);
+    this._data = FilmDetailsNewComment.parseToData(comment);
 
     this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
     this._addCommentHandler = this._addCommentHandler.bind(this);
@@ -88,13 +88,13 @@ export default class FilmDetailsNewComment extends SmartView {
     this.getElement().addEventListener('keydown', this._addCommentHandler);
   }
 
-  static parseFilmToData(film) {
+  static parseToData(comment) {
     return Object.assign(
       {},
-      film,
+      comment,
       {
         checkedEmotion: null,
-        isDisabled: true,
+        isDisabled: false,
       },
     );
   }

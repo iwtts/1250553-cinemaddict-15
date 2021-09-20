@@ -6,6 +6,13 @@ import FilmDetailsNewCommentView from '../view/film-details-new-comment';
 import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
 
+export const State = {
+  DEFAULT: 'DEFAULT',
+  DELETING: 'DELETING',
+  SAVING: 'SAVING',
+};
+
+
 export default class FilmCard {
   constructor(container, changeData, api) {
     this._container = container;
@@ -39,6 +46,7 @@ export default class FilmCard {
 
     this._filmCardComponent = new FilmCardView(film);
     this._filmDetailsComponent = new FilmDetailsView(film);
+    this._filmDetailsNewCommentComponent = new FilmDetailsNewCommentView();
     this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
 
@@ -53,10 +61,9 @@ export default class FilmCard {
         }
       });
 
-    const filmDetailsNewCommentComponent = new FilmDetailsNewCommentView();
 
-    render(filmDetailsCommentWrap, filmDetailsNewCommentComponent);
-    filmDetailsNewCommentComponent.setAddCommentHandler(this._handleAddComment);
+    render(filmDetailsCommentWrap, this._filmDetailsNewCommentComponent);
+    this._filmDetailsNewCommentComponent.setAddCommentHandler(this._handleAddComment);
 
     this._filmCardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._filmCardComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
@@ -88,6 +95,25 @@ export default class FilmCard {
   destroy() {
     remove(this._filmCardComponent);
     remove(this._filmDetailsComponent);
+  }
+
+  setViewState(state) {
+    if (state === State.DEFAULT) {
+      return;
+    }
+
+    switch (state) {
+      case State.SAVING:
+        this._filmDetailsNewCommentComponent.updateData({
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this._filmDetailsCommentComponent.updateData({
+          isDisabled: true,
+        });
+        break;
+    }
   }
 
   _openFilmDetails() {

@@ -4,7 +4,7 @@ import FilmsListEmptyView from '../view/films-list-empty';
 import FilmsListView from '../view/films-list';
 import ShowMoreButtonView from '../view/show-more-button';
 import LoadingView from '../view/loading.js';
-import FilmCardPresenter from './film-card';
+import FilmCardPresenter, {State as FilmCardPresenterViewState}  from './film-card';
 
 import { filter } from '../utils/filter';
 import { RenderPosition, render, remove } from '../utils/render';
@@ -84,9 +84,11 @@ export default class MainFilms {
         });
         break;
       case UserAction.DELETE_COMMENT:
+        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.DISABLED);
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
+        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.DISABLED);
         this._filmsModel.updateFilm(updateType, update);
         break;
     }
