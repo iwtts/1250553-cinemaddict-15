@@ -79,16 +79,20 @@ export default class MainFilms {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
-        });
+        this._api.updateFilm(update)
+          .then((response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch(() => {
+            this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.DELETE_COMMENT:
-        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.DISABLED);
+        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.DELETING);
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.DISABLED);
+        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.SAVING);
         this._filmsModel.updateFilm(updateType, update);
         break;
     }
