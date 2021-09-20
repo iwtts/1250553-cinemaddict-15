@@ -4,7 +4,7 @@ import he from 'he';
 import AbstractView from './abstract';
 
 const createFilmDetailsCommentTemplate = (comment) => {
-  const {id, emotion, date, text, author} = comment;
+  const {id, emotion, date, text, author, isDisabled} = comment;
 
   const commentDate = dayjs(date).format('YYYY/MM/DD HH:mm');
 
@@ -17,7 +17,7 @@ const createFilmDetailsCommentTemplate = (comment) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
+        <button class="film-details__comment-delete" data-id="${id} ${isDisabled ? 'disabled' : ''}">${isDisabled ? 'Deleting...' : 'Delete'}</button>
       </p>
     </div>
   </li>`;
