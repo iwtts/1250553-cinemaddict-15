@@ -1,6 +1,6 @@
 import AbstractView from './abstract';
 
-import { renderGenres, getFilmRuntime, getReleaseDate } from './utils';
+import { getFilmRuntime, getReleaseDate } from './utils';
 
 const createFilmDetailsTemplate = (film) => {
   const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = film;
@@ -61,7 +61,7 @@ const createFilmDetailsTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">${genresHeading}</td>
-                <td class="film-details__cell">${renderGenres(genres, 'details')}</td>
+                <td class="film-details__cell">${genres.join(', ')}</td>
               </tr>
             </table>
             <p class="film-details__film-description">${description}</p>

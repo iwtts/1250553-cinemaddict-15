@@ -59,7 +59,10 @@ export default class MainFilms {
   }
 
   _getFilms() {
-    this._filterType = this._filterModel.getFilter();
+    if (this._filterType !== FilterType.STATS) {
+      this._filterType = this._filterModel.getFilter();
+    }
+
     const films = this._filmsModel.getFilms();
     const filtredFilms = filter[this._filterType](films);
 

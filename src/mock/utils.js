@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -36,22 +34,4 @@ export const getRandomFishText = () => {
   const getRandomSentence = () => sentences[getRandomInteger(0, sentences.length - 1)];
 
   return new Array(getRandomInteger(minSentences, maxSentences)).fill().map(() => getRandomSentence()).join(' ');
-};
-
-export const getRandomDate = () => {
-  const daysInterval = -300;
-  const day = dayjs().date((getRandomInteger(daysInterval, dayjs().date())));
-  return dayjs(day);
-};
-
-export const getRandomRating = () => `${getRandomInteger(4, 9)}.${getRandomInteger(0, 9)}`;
-
-export const getRandomRuntime = () => `${getRandomInteger(30, 180)}`;
-
-export const getRandomWatchingDate = () => {
-  const isDate = Boolean(getRandomInteger(0, 1));
-  if (!isDate) {
-    return null;
-  }
-  return getRandomDate();
 };

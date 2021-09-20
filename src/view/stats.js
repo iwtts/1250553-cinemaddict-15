@@ -5,8 +5,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart';
 
 import { getWatchedFilmsAmount, getRank} from '../utils/common';
-import { getSortedGenres } from './utils';
-import { StatsFilterType, getFilmsByPeriod, applyUpperSnakeCase } from '../utils/stats';
+import { getSortedGenres, StatsFilterType, getFilmsByPeriod, applyUpperSnakeCase } from './utils';
 
 const getChart = (statisticCtx, data) => {
   const BAR_HEIGHT = 50;

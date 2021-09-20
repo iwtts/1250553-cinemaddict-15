@@ -42,15 +42,17 @@ export default class FilmCard {
     this._filmDetailsComponent = new FilmDetailsView(film);
     this._filmDetailsCommentsList = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-list');
 
-    //this._api.getComments(this._film.id);
 
     const filmDetailsCommentWrap = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
 
-    for (let i = 0; i < this._film.comments.length; i++) {
-      const filmDetailsCommentComponent = new FilmDetailsCommentView(this._film.comments[i]);
-      render(this._filmDetailsCommentsList, filmDetailsCommentComponent);
-      filmDetailsCommentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-    }
+    this._api.getComments(this._film.id)
+      .then((comments) => {
+        for (let i = 0; i < comments.length; i++) {
+          const filmDetailsCommentComponent = new FilmDetailsCommentView(comments[i]);
+          render(this._filmDetailsCommentsList, filmDetailsCommentComponent);
+          filmDetailsCommentComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
+        }
+      });
 
     const filmDetailsNewCommentComponent = new FilmDetailsNewCommentView();
 
