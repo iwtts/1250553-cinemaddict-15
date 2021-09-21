@@ -1,7 +1,7 @@
 import AbstractView from './abstract';
 import { SortType } from '../const';
 
-const createMainSortTemplate = (currentSortType) => (
+const createSortTemplate = (currentSortType) => (
   `<ul class="sort">
     <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? 'sort__button--active' : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
     <li><a href="#" class="sort__button ${currentSortType === SortType.DATE ? 'sort__button--active' : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
@@ -9,7 +9,7 @@ const createMainSortTemplate = (currentSortType) => (
   </ul>`
 );
 
-export default class MainSort extends AbstractView {
+export default class Sort extends AbstractView {
   constructor(currentSortType) {
     super();
 
@@ -19,7 +19,7 @@ export default class MainSort extends AbstractView {
   }
 
   getTemplate() {
-    return createMainSortTemplate(this._currentSortType);
+    return createSortTemplate(this._currentSortType);
   }
 
   _sortTypeChangeHandler(evt) {

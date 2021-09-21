@@ -6,9 +6,9 @@ import { FilterType, UpdateType, NavigationItem } from '../const';
 
 
 export default class Navigation {
-  constructor(container, filterModel, filmsModel, showFilms, showStats) {
+  constructor(container, filtersModel, filmsModel, showFilms, showStats) {
     this._container = container;
-    this._filterModel = filterModel;
+    this._filtersModel = filtersModel;
     this._filmsModel = filmsModel;
     this._showFilms = showFilms;
     this._showStats = showStats;
@@ -20,14 +20,14 @@ export default class Navigation {
     this._handleNavigationClick = this._handleNavigationClick.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._filtersModel.addObserver(this._handleModelEvent);
   }
 
   init() {
     const filters = this._getFilters();
     const prevNavigationComponent = this._navigationComponent;
 
-    this._navigationComponent = new NavigationView(filters, this._filterModel.getFilter());
+    this._navigationComponent = new NavigationView(filters, this._filtersModel.getFilter());
     this._navigationComponent.setFilterClickHandler(this._handleFilterClick);
     this._navigationComponent.setNavigationClickHandler(this._handleNavigationClick);
     if (prevNavigationComponent === null) {
@@ -44,11 +44,11 @@ export default class Navigation {
   }
 
   _handleFilterClick(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
+    if (this._filtersModel.getFilter() === filterType) {
       return;
     }
 
-    this._filterModel.setFilter(UpdateType.MINOR, filterType);
+    this._filtersModel.setFilter(UpdateType.MINOR, filterType);
   }
 
   _handleNavigationClick(navigationItem) {

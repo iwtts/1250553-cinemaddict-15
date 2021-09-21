@@ -1,6 +1,6 @@
 import SmartView from './smart';
 
-const createFilmDetailsNewCommentTemplate = (data) => {
+const createPopupNewCommentTemplate = (data) => {
   const { checkedEmotion } = data;
 
   return `<div class="film-details__new-comment">
@@ -31,10 +31,10 @@ const createFilmDetailsNewCommentTemplate = (data) => {
           </div>`;
 };
 
-export default class FilmDetailsNewComment extends SmartView {
+export default class PopupNewComment extends SmartView {
   constructor() {
     super();
-    this._data = FilmDetailsNewComment.parseToData();
+    this._data = PopupNewComment.parseToData();
 
     this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
     this._addCommentHandler = this._addCommentHandler.bind(this);
@@ -44,7 +44,7 @@ export default class FilmDetailsNewComment extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsNewCommentTemplate(this._data);
+    return createPopupNewCommentTemplate(this._data);
   }
 
   restoreHandlers() {
@@ -78,7 +78,7 @@ export default class FilmDetailsNewComment extends SmartView {
     }
   }
 
-  setAddCommentState(state) {
+  setAddingCommentState(state) {
     this.updateData(
       {
         isDisabled: state,
