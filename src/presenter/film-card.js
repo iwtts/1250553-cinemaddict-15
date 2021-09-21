@@ -45,7 +45,6 @@ export default class FilmCard {
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
     this._filmCardComponent = new FilmCardView(film);
-    this._filmDetailsComponent = new FilmDetailsView(this._film, this._comments);
     this._filmDetailsNewCommentComponent = new FilmDetailsNewCommentView(this._film);
 
 
@@ -83,14 +82,9 @@ export default class FilmCard {
     }
 
     switch (state) {
-      case State.SAVING:
-        this._filmDetailsComponent.updateData({
-          isDisabled: true,
-        });
-        break;
       case State.DELETING:
         this._filmDetailsComponent.updateData({
-          comments: this._comments.map((comment) => Object.assign(
+          comments: this.comments.map((comment) => Object.assign(
             {},
             comment,
             {
@@ -129,6 +123,7 @@ export default class FilmCard {
     this._api.getComments(this._film.id)
       .then((comments) => {
         this._comments = comments.slice();
+        this._filmDetailsComponent = new FilmDetailsView(this._film, this._comments);
 
         this._filmDetailsComponent.setCloseFilmDetailsClickHandler(this._handleCloseFilmDetailsClick);
         this._filmDetailsComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
@@ -136,7 +131,6 @@ export default class FilmCard {
         this._filmDetailsComponent.setFavouriteClickHandler(this._handleFavouriteClick);
 
         this._filmDetailsComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-        // this._filmDetailsComponent.setAddCommentHandler(this._handleAddComment);
 
         if (this._bodyElement.lastElementChild.className === 'film-details') {
           this._bodyElement.lastElementChild.remove();
