@@ -25,42 +25,6 @@ const createCommentTemplate = (comment) => {
   </li>`;
 };
 
-const createNewCommentTemplate = (data) => {
-  const { checkedEmotion, isDisabled } = data;
-
-  return `<div class="film-details__new-comment">
-    <div class="film-details__add-emoji-label">
-      ${checkedEmotion ? `<img src="images/emoji/${checkedEmotion}.png" width="55" height="55" alt="emoji-${checkedEmotion}">` : ''}
-    </div>
-
-    <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"${isDisabled ? 'disabled' : ''}></textarea>
-    </label>
-
-    <div class="film-details__emoji-list">
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile"${isDisabled ? 'disabled' : ''}>
-      <label class="film-details__emoji-label" for="emoji-smile">
-        <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-      </label>
-
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping"${isDisabled ? 'disabled' : ''}>
-      <label class="film-details__emoji-label" for="emoji-sleeping">
-        <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-      </label>
-
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke"${isDisabled ? 'disabled' : ''}>
-      <label class="film-details__emoji-label" for="emoji-puke">
-        <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-      </label>
-
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry"${isDisabled ? 'disabled' : ''}>
-      <label class="film-details__emoji-label" for="emoji-angry">
-        <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-      </label>
-    </div>
-  </div>`;
-};
-
 const createFilmDetailsTemplate = (data) => {
   const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = data;
 
@@ -76,8 +40,6 @@ const createFilmDetailsTemplate = (data) => {
     .slice()
     .map((comment) => createCommentTemplate(comment))
     .join('');
-
-  const newCommentTemplate = createNewCommentTemplate(data);
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -143,7 +105,6 @@ const createFilmDetailsTemplate = (data) => {
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
           <ul class="film-details__comments-list">${commentsListTemplate}</ul>
-          ${newCommentTemplate}
         </section>
       </div>
     </form>
@@ -162,11 +123,6 @@ export default class FilmDetails extends SmartView {
     this._closeFilmDetailsClickHandler = this._closeFilmDetailsClickHandler.bind(this);
 
     this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
-
-    this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
-    this._addCommentHandler = this._addCommentHandler.bind(this);
-
-    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -183,14 +139,8 @@ export default class FilmDetails extends SmartView {
     this.setCommentDeleteClickHandle(this._callback.commentDeleteClick);
 
     this._setInnerHandlers();
-    this.setAddCommentHandler(this._callback.addComment);
   }
 
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector('.film-details__emoji-list')
-      .addEventListener('change', this._emotionChangeHandler);
-  }
 
   _addToWatchListClickHandler(evt) {
     evt.preventDefault();
@@ -230,14 +180,6 @@ export default class FilmDetails extends SmartView {
     }
   }
 
-  _addCommentHandler(evt) {
-    if (evt.key === 'Enter' && evt.ctrlKey || evt.key === 'Enter' && evt.metaKey) {
-      evt.preventDefault();
-      const newCommentText = this.getElement().querySelector('.film-details__comment-input').value;
-      this._callback.addComment(this._data.checkedEmotion, newCommentText);
-    }
-  }
-
   setCommentDeleteState(id, state) {
     this.updateData({
       comments: this._data.comments.map((comment) => {
@@ -247,23 +189,6 @@ export default class FilmDetails extends SmartView {
         return comment;
       }),
     });
-  }
-
-  setAddCommentComment(state) {
-    this.updateData(
-      {
-        isDisabled: state,
-      },
-    );
-  }
-
-  setErrorAction() {
-
-  }
-
-  setAddCommentHandler(callback) {
-    this._callback.addComment = callback;
-    this.getElement().addEventListener('keydown', this._addCommentHandler);
   }
 
   setAddToWatchListClickHandler(callback) {
@@ -300,8 +225,6 @@ export default class FilmDetails extends SmartView {
       {},
       film,
       {
-        checkedEmotion: null,
-        isDisabled: false,
         comments: comments.map((comment) => Object.assign(
           {},
           comment,
