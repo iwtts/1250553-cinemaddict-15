@@ -1,9 +1,32 @@
-import AbstractView from './abstract';
+import dayjs from 'dayjs';
+import he from 'he';
 
-import { renderGenres, getFilmRuntime, getReleaseDate } from './utils';
+import SmartView from './abstract';
 
-const createFilmDetailsTemplate = (film) => {
-  const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = film;
+import { getFilmRuntime, getReleaseDate } from './utils';
+
+const createCommentTemplate = (comment) => {
+  const {id, emotion, date, text, author, isDisabled} = comment;
+
+  const commentDate = dayjs(date).format('YYYY/MM/DD HH:mm');
+
+  return `<li class="film-details__comment">
+    <span class="film-details__comment-emoji">
+      <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+    </span>
+    <div>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${author}</span>
+        <span class="film-details__comment-day">${commentDate}</span>
+        <button class="film-details__comment-delete" data-id="${id} ${isDisabled ? 'disabled' : ''}">${isDisabled ? 'Deleting...' : 'Delete'}</button>
+      </p>
+    </div>
+  </li>`;
+};
+
+const createFilmDetailsTemplate = (data) => {
+  const {poster, ageRating, title, alternativeTitle, totalRating, director, writers, actors, releaseDate, runtime, releaseCountry, genres, description, isInWatchList, isAlreadyWatched, isFavorite, comments} = data;
 
   const defineButtonActiveState = (condition) => {
     if (condition) {
@@ -12,6 +35,11 @@ const createFilmDetailsTemplate = (film) => {
   };
 
   const genresHeading = genres.length > 1 ? 'Genres' : 'Genre';
+
+  const commentsListTemplate = comments
+    .slice()
+    .map((comment) => createCommentTemplate(comment))
+    .join('');
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -22,7 +50,7 @@ const createFilmDetailsTemplate = (film) => {
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
             <img class="film-details__poster-img" src="${poster}" alt="${title} poster">
-            <p class="film-details__age">${ageRating}</p>
+            <p class="film-details__age">${ageRating}+</p>
           </div>
           <div class="film-details__info">
             <div class="film-details__info-head">
@@ -61,7 +89,7 @@ const createFilmDetailsTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">${genresHeading}</td>
-                <td class="film-details__cell">${renderGenres(genres, 'details')}</td>
+                <td class="film-details__cell">${genres.join(', ')}</td>
               </tr>
             </table>
             <p class="film-details__film-description">${description}</p>
@@ -76,30 +104,43 @@ const createFilmDetailsTemplate = (film) => {
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-          <ul class="film-details__comments-list">
-          </ul>
-
+          <ul class="film-details__comments-list">${commentsListTemplate}</ul>
         </section>
       </div>
     </form>
   </section>`;
 };
 
-export default class FilmDetails extends AbstractView {
-  constructor(film) {
+export default class FilmDetails extends SmartView {
+  constructor(film, comments) {
     super();
-    this._film = film;
+    this._data = FilmDetails.parseToData(film, comments);
 
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
     this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
 
     this._closeFilmDetailsClickHandler = this._closeFilmDetailsClickHandler.bind(this);
+
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createFilmDetailsTemplate(this._data);
   }
+
+  restoreHandlers() {
+    this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
+    this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
+    this.setFavouriteClickHandler(this._callback.favouriteClick);
+
+    this.setCloseFilmDetailsClickHandler(this._callback.closeFilmDetailsClick);
+
+    this.setCommentDeleteClickHandle(this._callback.commentDeleteClick);
+
+    this._setInnerHandlers();
+  }
+
 
   _addToWatchListClickHandler(evt) {
     evt.preventDefault();
@@ -119,6 +160,35 @@ export default class FilmDetails extends AbstractView {
   _closeFilmDetailsClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeFilmDetailsClick();
+  }
+
+  _commentDeleteClickHandler(evt) {
+    if (evt.target.matches('.film-details__comment-delete')){
+      this._callback.commentDeleteClick(evt.target.dataset.id);
+    }
+  }
+
+  _onEmotionChange(emotion) {
+    this.updateData({
+      checkedEmotion: emotion,
+    });
+  }
+
+  _emotionChangeHandler(evt) {
+    if (evt.target.matches('input[type="radio"]')) {
+      this._onEmotionChange(evt.target.value);
+    }
+  }
+
+  setCommentDeleteState(id, state) {
+    this.updateData({
+      comments: this._data.comments.map((comment) => {
+        if (comment.id === id) {
+          comment.isDisabled = state;
+        }
+        return comment;
+      }),
+    });
   }
 
   setAddToWatchListClickHandler(callback) {
@@ -143,5 +213,26 @@ export default class FilmDetails extends AbstractView {
     this._callback.closeFilmDetailsClick = callback;
 
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeFilmDetailsClickHandler);
+  }
+
+  setCommentDeleteClickHandler(callback) {
+    this._callback.commentDeleteClick = callback;
+    this.getElement().addEventListener('click', this._commentDeleteClickHandler);
+  }
+
+  static parseToData(film, comments) {
+    return Object.assign(
+      {},
+      film,
+      {
+        comments: comments.map((comment) => Object.assign(
+          {},
+          comment,
+          {
+            isDisabled: false,
+          },
+        )),
+      },
+    );
   }
 }

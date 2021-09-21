@@ -1,5 +1,4 @@
 export default class Comments {
-
   static adaptToClient(comment) {
     const adaptedComment = Object.assign(
       {},
@@ -27,11 +26,8 @@ export default class Comments {
       {},
       comment,
       {
-        ['id']: comment.id,
-        ['author']: comment.author,
         ['emotion']: comment.emotion,
         ['comment']: comment.text,
-        ['date']: comment.date,
       },
     );
 

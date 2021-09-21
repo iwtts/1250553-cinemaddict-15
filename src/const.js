@@ -24,3 +24,8 @@ export const FilterType = {
   FAVORITES: 'favorites',
   STATS: 'stats',
 };
+
+export const NavigationItem = {
+  FILMS: 'FILMS',
+  STATS: 'STATS',
+};

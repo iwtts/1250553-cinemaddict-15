@@ -4,7 +4,7 @@ import FilmsListEmptyView from '../view/films-list-empty';
 import FilmsListView from '../view/films-list';
 import ShowMoreButtonView from '../view/show-more-button';
 import LoadingView from '../view/loading.js';
-import FilmCardPresenter from './film-card';
+import FilmCardPresenter, {State as FilmCardPresenterViewState}  from './film-card';
 
 import { filter } from '../utils/filter';
 import { RenderPosition, render, remove } from '../utils/render';
@@ -59,7 +59,10 @@ export default class MainFilms {
   }
 
   _getFilms() {
-    this._filterType = this._filterModel.getFilter();
+    if (this._filterType !== FilterType.STATS) {
+      this._filterType = this._filterModel.getFilter();
+    }
+
     const films = this._filmsModel.getFilms();
     const filtredFilms = filter[this._filterType](films);
 
@@ -76,14 +79,20 @@ export default class MainFilms {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
-        });
+        this._api.updateFilm(update)
+          .then((response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch(() => {
+            this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.DELETE_COMMENT:
+        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.DELETING);
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
+        this._filmCardPresenter.get(update.id).setViewState(FilmCardPresenterViewState.SAVING);
         this._filmsModel.updateFilm(updateType, update);
         break;
     }
