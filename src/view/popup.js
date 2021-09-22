@@ -164,7 +164,7 @@ export default class Popup extends SmartView {
 
   _deleteCommentClickHandler(evt) {
     if (evt.target.matches('.film-details__comment-delete')){
-      this._callback.commentDeleteClick(evt.target.dataset.id);
+      this._callback.deleteCommentClick(evt.target.dataset.id);
     }
   }
 

@@ -130,7 +130,7 @@ export default class Card {
         this._comments = comments.slice();
         this._popupComponent = new PopupView(this._film, this._comments);
 
-        this._popupComponent.setCloseFilmDetailsClickHandler(this._handleClosePopupClick);
+        this._popupComponent.setClosePopupClickHandler(this._handleClosePopupClick);
         this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
         this._popupComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
         this._popupComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);

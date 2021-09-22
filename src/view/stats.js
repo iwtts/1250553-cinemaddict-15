@@ -4,6 +4,8 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import SmartView from './smart';
 
+import { MINUTES_IN_HOUR } from './const';
+
 import { getWatchedFilmsAmount, getRank} from '../utils/common';
 import { getSortedGenres, StatsFilterType, getFilmsByPeriod, applyUpperSnakeCase } from './utils';
 
@@ -78,7 +80,7 @@ const createRankTemplate = (rank) => (
   </p>`
 );
 
-const createStatsTemplate = (data) => (
+const createStatsTemplate = (data) =>(
   `<section class="statistic">
     ${data.wathedFilmsAmount ? createRankTemplate(getRank(data.wathedFilmsAmount)) : ''}
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -110,7 +112,7 @@ const createStatsTemplate = (data) => (
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
         <p class="statistic__item-text">
-          ${dayjs.duration(data.wathedFilmsTotalDuration, 'minutes').hours()} <span class="statistic__item-description">h</span>
+          ${Math.ceil(data.wathedFilmsTotalDuration/MINUTES_IN_HOUR)}<span class="statistic__item-description">h</span>
           ${dayjs.duration(data.wathedFilmsTotalDuration, 'minutes').minutes()} <span class="statistic__item-description">m</span>
         </p>
       </li>
@@ -133,7 +135,7 @@ export default class StatsView extends SmartView {
   constructor(films) {
     super();
     this._films = films.filter((film) => film.isAlreadyWatched);
-    this._data = StatsView.parseFilmsToData(this._films);
+    this._data = StatsView.parseToData(this._films);
     this._chart = null;
     this._setChart();
 
@@ -158,7 +160,7 @@ export default class StatsView extends SmartView {
   }
 
   _statsFiltersChangeHandler(evt) {
-    this._data = StatsView.parseFilmsToData(getFilmsByPeriod(
+    this._data = StatsView.parseToData(getFilmsByPeriod(
       this._films,
       StatsFilterType[applyUpperSnakeCase(evt.target.value)].shorthand),
     );
@@ -178,7 +180,7 @@ export default class StatsView extends SmartView {
     this._chart = getChart(statisticCtx, this._data);
   }
 
-  static parseFilmsToData(films) {
+  static parseToData(films) {
     const sortedGenres = getSortedGenres(films);
 
     return {
