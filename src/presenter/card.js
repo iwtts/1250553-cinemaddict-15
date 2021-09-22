@@ -53,7 +53,6 @@ export default class Card {
     this._cardComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);
     this._cardComponent.setOpenPopupClickHandler(this._handleOpenPopupClick);
 
-
     if (prevCardComponent === null || prevPopupComponent === null) {
       render(this._container, this._cardComponent);
       return;
@@ -187,6 +186,7 @@ export default class Card {
         },
       ),
     );
+    this._bodyElement.classList.remove('hide-overflow');
   }
 
   _handleMarkAsWatchedClick() {
@@ -201,6 +201,7 @@ export default class Card {
         },
       ),
     );
+    this._bodyElement.classList.remove('hide-overflow');
   }
 
   _handleMarkAsFavouriteClick() {
@@ -215,6 +216,7 @@ export default class Card {
         },
       ),
     );
+    this._bodyElement.classList.remove('hide-overflow');
   }
 
   _handleDeleteCommentClick(id) {
