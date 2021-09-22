@@ -218,7 +218,7 @@ export default class Card {
   }
 
   _handleDeleteCommentClick(id) {
-    this._popupComponent.setDeletingCommentState(id, true);
+    this._popupComponent.setDeletingCommentState(id);
     this._api.deleteComment(id)
       .then(() => {
         this._comments = this._comments.filter((comment) => comment.id !== id);

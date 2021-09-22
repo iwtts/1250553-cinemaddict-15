@@ -114,7 +114,9 @@ const createPopupTemplate = (data) => {
 export default class Popup extends SmartView {
   constructor(film, comments) {
     super();
-    this._data = Popup.parseToData(film, comments);
+    this._film = film;
+    this._comments = comments;
+    this._data = Popup.parseToData(this._film, this._comments);
 
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
@@ -168,11 +170,11 @@ export default class Popup extends SmartView {
     }
   }
 
-  setDeletingCommentState(id, state) {
+  setDeletingCommentState(id) {
     this.updateData({
-      comments: this._data.comments.map((comment) => {
+      comments: this._comments.map((comment) => {
         if (comment.id === id) {
-          comment.isDisabled = state;
+          comment.isDisabled = true;
         }
         return comment;
       }),
