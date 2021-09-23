@@ -53,6 +53,7 @@ export default class Card {
     this._cardComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);
     this._cardComponent.setOpenPopupClickHandler(this._handleOpenPopupClick);
 
+
     if (prevCardComponent === null || prevPopupComponent === null) {
       render(this._container, this._cardComponent);
       return;
@@ -88,7 +89,7 @@ export default class Card {
         break;
       case State.DELETING:
         this._popupComponent.updateData({
-          comments: this.comments.map((comment) => Object.assign(
+          comments: this._comments.map((comment) => Object.assign(
             {},
             comment,
             {
@@ -140,13 +141,12 @@ export default class Card {
           this._bodyElement.lastElementChild.remove();
         }
 
-        this._bodyElement.appendChild(this._popupComponent.getElement());
-        this._bodyElement.classList.add('hide-overflow');
-
         const popupCommentsWrap = this._popupComponent.getElement().querySelector('.film-details__comments-wrap');
         render(popupCommentsWrap, this._popupNewCommentComponent);
         this._popupNewCommentComponent.setAddCommentHandler(this._handleAddComment);
 
+        this._bodyElement.appendChild(this._popupComponent.getElement());
+        this._bodyElement.classList.add('hide-overflow');
 
         document.addEventListener('keydown', this._escKeyDownHandler);
       });
@@ -186,7 +186,6 @@ export default class Card {
         },
       ),
     );
-    this._bodyElement.classList.remove('hide-overflow');
   }
 
   _handleMarkAsWatchedClick() {
@@ -201,7 +200,6 @@ export default class Card {
         },
       ),
     );
-    this._bodyElement.classList.remove('hide-overflow');
   }
 
   _handleMarkAsFavouriteClick() {
@@ -216,14 +214,13 @@ export default class Card {
         },
       ),
     );
-    this._bodyElement.classList.remove('hide-overflow');
   }
 
   _handleDeleteCommentClick(id) {
-    this._popupComponent.setDeletingCommentState(id);
+    this._popupComponent.setDeletingCommentState(id, true);
     this._api.deleteComment(id)
       .then(() => {
-        this._comments = this._comments.filter((comment) => comment.id !== id);
+        this._comments = this._comments.filter((comment) => comment.id !== id.toString());
         this._changeData(
           UserAction.DELETE_COMMENT,
           UpdateType.PATCH,
@@ -233,10 +230,10 @@ export default class Card {
             {
               comments: this._film.comments.filter((commentId) => commentId !== id),
             },
-          ))
-          .catch(() => {
-            this._popupComponent.shake(this._resetPopupState);
-          });
+          ));
+      })
+      .catch(() => {
+        this._popupComponent.shake(this._resetPopupState);
       });
   }
 
