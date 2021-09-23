@@ -76,6 +76,100 @@ export default class CardsSection {
     return filtredFilms;
   }
 
+  _renderSort() {
+    if (this._sortComponent !== null) {
+      this._sortComponent = null;
+    }
+
+    this._sortComponent = new SortView(this._currentSortType);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+
+    render(this._cardsSectionComponent, this._sortComponent, RenderPosition.BEFOREBEGIN);
+  }
+
+  _renderCard(film) {
+    const cardPresenter = new CardPresenter(this._cardsListContainerElement, this._handleViewAction, this._api);
+    cardPresenter.init(film);
+    this._cardPresenter.set(film.id, cardPresenter);
+  }
+
+  _renderCards(films) {
+    films.forEach((film) => this._renderCard(film));
+  }
+
+  _renderLoading() {
+    render(this._cardsSectionComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
+  _renderCardsListEmpty() {
+    this._cardsListEmptyComponent = new CardsListEmptyView(this._filterType);
+    render(this._cardsSectionComponent, this._cardsListEmptyComponent);
+  }
+
+  _renderCardsList() {
+    render(this._cardsSectionComponent, this._cardsListComponent);
+    this._cardsListContainerElement = this._cardsListComponent.getElement().querySelector('.films-list__container');
+  }
+
+  _renderShowMoreButton() {
+    if (this._showMoreButtonComponent !== null) {
+      this._showMoreButtonComponent = null;
+    }
+
+    this._showMoreButtonComponent = new ShowMoreButtonView();
+    this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
+
+    render(this._cardsListComponent, this._showMoreButtonComponent);
+  }
+
+  _renderCardsSection() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
+    const films = this._getFilms();
+    const filmsCount = films.length;
+
+    if (filmsCount === 0) {
+      this._renderCardsListEmpty();
+      return;
+    }
+
+    this._renderSort();
+    this._renderCardsList();
+    this._renderCards(films.slice(0, Math.min(filmsCount, this._renderedCardsCount)));
+
+    if (filmsCount > this._renderedCardsCount) {
+      this._renderShowMoreButton();
+    }
+  }
+
+  _clearCardsSection({resetRenderedCardsCount: resetRenderedCardsCount = false, resetSortType = false} = {}) {
+    const filmsCount = this._getFilms().length;
+
+    this._cardPresenter.forEach((presenter) => presenter.destroy());
+    this._cardPresenter.clear();
+
+    remove(this._loadingComponent);
+    remove(this._sortComponent);
+    remove(this._showMoreButtonComponent);
+
+    if (this._cardsListEmptyComponent) {
+      remove(this._cardsListEmptyComponent);
+    }
+
+    if (resetRenderedCardsCount) {
+      this._renderedCardsCount = CARDS_COUNT_PER_STEP;
+    } else {
+      this._renderedCardsCount = Math.min(filmsCount, this._renderedCardsCount);
+    }
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DEFAULT;
+    }
+  }
+
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
@@ -129,41 +223,6 @@ export default class CardsSection {
     this._renderCardsSection();
   }
 
-  _renderSort() {
-    if (this._sortComponent !== null) {
-      this._sortComponent = null;
-    }
-
-    this._sortComponent = new SortView(this._currentSortType);
-    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-
-    render(this._cardsSectionComponent, this._sortComponent, RenderPosition.BEFOREBEGIN);
-  }
-
-  _renderCard(film) {
-    const cardPresenter = new CardPresenter(this._cardsListContainerElement, this._handleViewAction, this._api);
-    cardPresenter.init(film);
-    this._cardPresenter.set(film.id, cardPresenter);
-  }
-
-  _renderCards(films) {
-    films.forEach((film) => this._renderCard(film));
-  }
-
-  _renderLoading() {
-    render(this._cardsSectionComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
-  }
-
-  _renderCardsListEmpty() {
-    this._cardsListEmptyComponent = new CardsListEmptyView(this._filterType);
-    render(this._cardsSectionComponent, this._cardsListEmptyComponent);
-  }
-
-  _renderCardsList() {
-    render(this._cardsSectionComponent, this._cardsListComponent);
-    this._cardsListContainerElement = this._cardsListComponent.getElement().querySelector('.films-list__container');
-  }
-
   _handleShowMoreButtonClick() {
     const filmsCount = this._getFilms().length;
     const newRenderedCardsCount = Math.min(filmsCount, this._renderedCardsCount + CARDS_COUNT_PER_STEP);
@@ -174,65 +233,6 @@ export default class CardsSection {
 
     if (this._renderedCardsCount >= filmsCount) {
       remove(this._showMoreButtonComponent);
-    }
-  }
-
-  _renderShowMoreButton() {
-    if (this._showMoreButtonComponent !== null) {
-      this._showMoreButtonComponent = null;
-    }
-
-    this._showMoreButtonComponent = new ShowMoreButtonView();
-    this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
-
-    render(this._cardsListComponent, this._showMoreButtonComponent);
-  }
-
-  _clearCardsSection({resetRenderedCardsCount: resetRenderedCardsCount = false, resetSortType = false} = {}) {
-    const filmsCount = this._getFilms().length;
-
-    this._cardPresenter.forEach((presenter) => presenter.destroy());
-    this._cardPresenter.clear();
-
-    remove(this._loadingComponent);
-    remove(this._sortComponent);
-    remove(this._showMoreButtonComponent);
-
-    if (this._cardsListEmptyComponent) {
-      remove(this._cardsListEmptyComponent);
-    }
-
-    if (resetRenderedCardsCount) {
-      this._renderedCardsCount = CARDS_COUNT_PER_STEP;
-    } else {
-      this._renderedCardsCount = Math.min(filmsCount, this._renderedCardsCount);
-    }
-
-    if (resetSortType) {
-      this._currentSortType = SortType.DEFAULT;
-    }
-  }
-
-  _renderCardsSection() {
-    if (this._isLoading) {
-      this._renderLoading();
-      return;
-    }
-
-    const films = this._getFilms();
-    const filmsCount = films.length;
-
-    if (filmsCount === 0) {
-      this._renderCardsListEmpty();
-      return;
-    }
-
-    this._renderSort();
-    this._renderCardsList();
-    this._renderCards(films.slice(0, Math.min(filmsCount, this._renderedCardsCount)));
-
-    if (filmsCount > this._renderedCardsCount) {
-      this._renderShowMoreButton();
     }
   }
 }

@@ -39,33 +39,6 @@ export default class Navigation {
     remove(prevNavigationComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterClick(filterType) {
-    if (this._filtersModel.getFilter() === filterType) {
-      return;
-    }
-
-    this._filtersModel.setFilter(UpdateType.MINOR, filterType);
-  }
-
-  _handleNavigationClick(navigationItem) {
-    if (navigationItem === NavigationItem.STATS) {
-      this._navigationComponent
-        .getElement().querySelector('.main-navigation__additional')
-        .classList.add('main-navigation__additional--active');
-      this._navigationComponent
-        .getElement().querySelectorAll('.main-navigation__item').forEach((element) => {
-          element.classList.remove('main-navigation__item--active');
-        });
-      this._showStats();
-    } else {
-      this._showFilms();
-    }
-  }
-
   _getFilters() {
     const films = this._filmsModel.getFilms();
 
@@ -91,5 +64,32 @@ export default class Navigation {
         count: filter[FilterType.FAVORITES](films).length,
       },
     ];
+  }
+
+  _handleModelEvent() {
+    this.init();
+  }
+
+  _handleFilterClick(filterType) {
+    if (this._filtersModel.getFilter() === filterType) {
+      return;
+    }
+
+    this._filtersModel.setFilter(UpdateType.MINOR, filterType);
+  }
+
+  _handleNavigationClick(navigationItem) {
+    if (navigationItem === NavigationItem.STATS) {
+      this._navigationComponent
+        .getElement().querySelector('.main-navigation__additional')
+        .classList.add('main-navigation__additional--active');
+      this._navigationComponent
+        .getElement().querySelectorAll('.main-navigation__item').forEach((element) => {
+          element.classList.remove('main-navigation__item--active');
+        });
+      this._showStats();
+    } else {
+      this._showFilms();
+    }
   }
 }
