@@ -160,6 +160,7 @@ export default class CardsSection {
     if (presenter) {
       presenter.openPopup();
     } else {
+      this._openedFilmId = null;
       this._bodyElement.classList.remove('hide-overflow');
     }
   }
