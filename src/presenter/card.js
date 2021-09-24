@@ -40,7 +40,6 @@ export default class Card {
 
   init(film) {
     this._film = film;
-
     const prevCardComponent = this._cardComponent;
     const prevPopupComponent = this._popupComponent;
 
@@ -131,9 +130,9 @@ export default class Card {
         this._popupComponent = new PopupView(this._film, this._comments);
 
         this._popupComponent.setClosePopupClickHandler(this._handleClosePopupClick);
-        this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
-        this._popupComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
-        this._popupComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);
+        // this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
+        // this._popupComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
+        // this._popupComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);
 
         this._popupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
 
