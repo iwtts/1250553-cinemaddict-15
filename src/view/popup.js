@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import he from 'he';
 
-import SmartView from './abstract';
+import SmartView from './smart';
 
 import { getFilmRuntime, getReleaseDate } from './utils';
 
@@ -19,7 +19,7 @@ const createCommentTemplate = (comment) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-id="${id} ${isDisabled ? 'disabled' : ''}">${isDisabled ? 'Deleting...' : 'Delete'}</button>
+        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? 'disabled' : ''}>${isDisabled ? 'Deleting...' : 'Delete'}</button>
       </p>
     </div>
   </li>`;
@@ -114,9 +114,7 @@ const createPopupTemplate = (data) => {
 export default class Popup extends SmartView {
   constructor(film, comments) {
     super();
-    this._film = film;
-    this._comments = comments;
-    this._data = Popup.parseToData(this._film, this._comments);
+    this._data = Popup.parseToData(film, comments);
 
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
@@ -139,8 +137,6 @@ export default class Popup extends SmartView {
     this.setClosePopupClickHandler(this._callback.closePopupClick);
 
     this.setDeleteCommentClickHandler(this._callback.deleteCommentClick);
-
-    this._setInnerHandlers();
   }
 
 
@@ -172,7 +168,7 @@ export default class Popup extends SmartView {
 
   setDeletingCommentState(id) {
     this.updateData({
-      comments: this._comments.map((comment) => {
+      comments: this._data.comments.map((comment) => {
         if (comment.id === id) {
           comment.isDisabled = true;
         }
