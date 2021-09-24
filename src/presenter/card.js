@@ -5,27 +5,13 @@ import PopupNewCommentView from '../view/popup-new-comment';
 import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
 
-// export const State = {
-//   DEFAULT: 'DEFAULT',
-//   DELETING: 'DELETING',
-//   SAVING: 'SAVING',
-//   ABORTING: 'ABORTING',
-// };
-
-export const Mode = {
-  OPEN: 'open',
-  CLOSED: 'closed',
-};
-
-
 export default class Card {
-  constructor(container, changeData, changeMode, api) {
+  constructor(container, changeData, onPopupOpen, onPopupClose, api) {
     this._container = container;
     this._changeData = changeData;
     this._api = api;
-    this._changeMode = changeMode;
-
-    this._mode = Mode.CLOSED;
+    this._onPopupOpen = onPopupOpen;
+    this._onPopupClose = onPopupClose;
 
     this._bodyElement =  document.querySelector('body');
 
@@ -52,8 +38,7 @@ export default class Card {
     const prevPopupComponent = this._popupComponent;
 
     this._cardComponent = new CardView(film);
-    this._initPopupComponent();
-    //this._popupComponent = new PopupView(this._film, this._comments);
+    this._setUpPopupComponent();
     this._popupNewCommentComponent = new PopupNewCommentView(this._film);
 
 
@@ -80,20 +65,19 @@ export default class Card {
     remove(prevPopupComponent);
   }
 
-  resetView() {
-    if (this._mode !== Mode.CLOSED) {
-      this._closePopup();
-    }
-  }
-
   destroy() {
     remove(this._cardComponent);
     remove(this._popupComponent);
   }
 
 
-  _initPopupComponent() {
+  _setUpPopupComponent() {
     this._popupComponent = new PopupView(this._film, this._comments);
+    this._popupNewCommentComponent = new PopupNewCommentView(this._film);
+
+    const popupCommentsWrap = this._popupComponent.getElement().querySelector('.film-details__comments-wrap');
+
+    render(popupCommentsWrap, this._popupNewCommentComponent);
 
     this._popupComponent.setClosePopupClickHandler(this._handleClosePopupClick);
     this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
@@ -101,84 +85,56 @@ export default class Card {
     this._popupComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);
     this._popupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
 
-    this._popupNewCommentComponent = new PopupNewCommentView(this._film);
-    const popupCommentsWrap = this._popupComponent.getElement().querySelector('.film-details__comments-wrap');
-    render(popupCommentsWrap, this._popupNewCommentComponent);
     this._popupNewCommentComponent.setAddCommentHandler(this._handleAddComment);
   }
 
-  _openPopup() {
+  openPopup() {
+    this._onPopupOpen();
     document.addEventListener('keydown', this._escKeyDownHandler);
-    this._changeMode();
-    this._mode = Mode.OPEN;
 
-    const fn = (comments) => {
+    const renderPopup = (comments) => {
       this._comments = comments.slice();
-      this._initPopupComponent();
+      this._setUpPopupComponent();
       this._bodyElement.appendChild(this._popupComponent.getElement());
       this._bodyElement.classList.add('hide-overflow');
     };
 
     this._api.getComments(this._film.id)
       .then((comments) => {
-        fn(comments);
+        renderPopup(comments);
       })
       .catch(() => {
-        fn(null);
+        renderPopup(null);
       });
   }
 
-  // _openPopup() {
-  //   this._api.getComments(this._film.id)
-  //     .then((comments) => {
-  //       this._comments = comments.slice();
-  //       this._popupComponent = new PopupView(this._film, this._comments);
+  closePopup() {
+    if (!this._bodyElement.contains(this._popupComponent.getElement())) {
+      return;
+    }
 
-  //       this._popupComponent.setClosePopupClickHandler(this._handleClosePopupClick);
-  //       this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
-  //       this._popupComponent.setMarkAsWatchedClickHandler(this._handleMarkAsWatchedClick);
-  //       this._popupComponent.setMarkAsFavouriteClickHandler(this._handleMarkAsFavouriteClick);
+    this._onPopupClose();
+    document.removeEventListener('keydown', this._escKeyDownHandler);
 
-  //       this._popupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
-
-  //       if (this._bodyElement.lastElementChild.className === 'film-details') {
-  //         this._bodyElement.lastElementChild.remove();
-  //       }
-
-  //       const popupCommentsWrap = this._popupComponent.getElement().querySelector('.film-details__comments-wrap');
-  //       render(popupCommentsWrap, this._popupNewCommentComponent);
-  //       this._popupNewCommentComponent.setAddCommentHandler(this._handleAddComment);
-
-  //       this._bodyElement.appendChild(this._popupComponent.getElement());
-  //       this._bodyElement.classList.add('hide-overflow');
-
-  //       document.addEventListener('keydown', this._escKeyDownHandler);
-  //       this._changeMode();
-  //       this._mode = Mode.OPEN;
-  //     });
-  // }
-
-  _closePopup() {
     this._bodyElement.removeChild(this._popupComponent.getElement());
     this._bodyElement.classList.remove('hide-overflow');
-
-    document.removeEventListener('keydown', this._escKeyDownHandler);
-    this._mode = Mode.CLOSED;
   }
 
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this._closePopup();
+
+      this._onPopupClose();
+      this.closePopup();
     }
   }
 
   _handleOpenPopupClick() {
-    this._openPopup();
+    this.openPopup();
   }
 
   _handleClosePopupClick() {
-    this._closePopup();
+    this.closePopup();
   }
 
   _handleAddToWatchListClick() {

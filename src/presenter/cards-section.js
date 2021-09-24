@@ -20,12 +20,13 @@ export default class CardsSection {
     this._filtersModel = filtersModel;
     this._renderedCardsCount = CARDS_COUNT_PER_STEP;
     this._bodyElement =  document.querySelector('body');
-    this._cardPresenter = new Map();
+    this._cardPresenters = new Map();
     this._filterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
     this._api = api;
 
+    this._openedFilmId = null;
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
     this._cardsListEmptyComponent = null;
@@ -33,8 +34,6 @@ export default class CardsSection {
     this._cardsSectionComponent = new CardsSectionView();
     this._cardsListComponent = new CardsListView();
     this._loadingComponent = new LoadingView();
-
-    this._handleModeChange = this._handleModeChange.bind(this);
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -78,6 +77,12 @@ export default class CardsSection {
     return filtredFilms;
   }
 
+  _initPopup(presenters, filmId) {
+    if (presenters.has(filmId)) {
+      presenters.get(filmId).closePopup();
+    }
+  }
+
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -90,9 +95,9 @@ export default class CardsSection {
   }
 
   _renderCard(film) {
-    const cardPresenter = new CardPresenter(this._cardsListContainerElement, this._handleViewAction, this._handleModeChange, this._api);
+    const cardPresenter = new CardPresenter(this._cardsListContainerElement, this._handleViewAction, () => this._handleOpenPopup(film.id), () => this._handleClosePopup(), this._api);
     cardPresenter.init(film);
-    this._cardPresenter.set(film.id, cardPresenter);
+    this._cardPresenters.set(film.id, cardPresenter);
   }
 
   _renderCards(films) {
@@ -147,11 +152,19 @@ export default class CardsSection {
     }
   }
 
+  _renderPopup() {
+    if (!this._openedFilmId) {
+      return;
+    }
+    const presenter = this._cardPresenters.get(this._openedFilmId);
+    presenter.openPopup();
+  }
+
   _clearCardsSection({resetRenderedCardsCount: resetRenderedCardsCount = false, resetSortType = false} = {}) {
     const filmsCount = this._getFilms().length;
 
-    this._cardPresenter.forEach((presenter) => presenter.destroy());
-    this._cardPresenter.clear();
+    this._cardPresenters.forEach((presenter) => presenter.destroy());
+    this._cardPresenters.clear();
 
     remove(this._loadingComponent);
     remove(this._sortComponent);
@@ -172,8 +185,16 @@ export default class CardsSection {
     }
   }
 
-  _handleModeChange() {
-    this._cardPresenter.forEach((presenter) => presenter.resetView());
+  _handleOpenPopup(id) {
+    const openedFilmId = this._openedFilmId;
+    if (openedFilmId !== null) {
+      this._initPopup(this._cardPresenters, openedFilmId);
+    }
+    this._openedFilmId = id;
+  }
+
+  _handleClosePopup() {
+    this._openedFilmId = null;
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -196,15 +217,17 @@ export default class CardsSection {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._cardPresenter.get(data.id).init(data);
+        this._cardPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this._clearCardsSection();
         this._renderCardsSection();
+        this._renderPopup();
         break;
       case UpdateType.MAJOR:
         this._clearCardsSection({resetRenderedCardsCount: true, resetSortType: true});
         this._renderCardsSection();
+        this._renderPopup();
         break;
       case UpdateType.INIT:
         this._isLoading = false;

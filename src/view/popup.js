@@ -123,8 +123,6 @@ export default class Popup extends SmartView {
     this._closePopupClickHandler = this._closePopupClickHandler.bind(this);
 
     this._deleteCommentClickHandler = this._deleteCommentClickHandler.bind(this);
-
-    // this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -132,7 +130,6 @@ export default class Popup extends SmartView {
   }
 
   restoreHandlers() {
-    // this._setInnerHandlers();
     this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
     this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
     this.setMarkAsFavouriteClickHandler(this._callback.markAsFavouriteClick);
@@ -153,27 +150,6 @@ export default class Popup extends SmartView {
       .querySelector('.film-details__control-button--favorite')
       .addEventListener('click', this._markAsFavouriteClickHandler);
   }
-
-  // _addToWatchListClickHandler() {
-  //   this.updateData({
-  //     isInWatchList: !this._data.isInWatchList,
-  //   });
-  //   Popup.parseDataToFilm(this._data);
-  // }
-
-  // _markAsWatchedClickHandler() {
-  //   this.updateData({
-  //     isAlreadyWatched: !this._data.isAlreadyWatched,
-  //   });
-  //   Popup.parseDataToFilm(this._data);
-  // }
-
-  // _markAsFavouriteClickHandler() {
-  //   this.updateData({
-  //     isFavorite: !this._data.isFavorite,
-  //   });
-  //   Popup.parseDataToFilm(this._data);
-  // }
 
   _addToWatchListClickHandler(evt) {
     evt.preventDefault();
