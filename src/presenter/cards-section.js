@@ -157,7 +157,11 @@ export default class CardsSection {
       return;
     }
     const presenter = this._cardPresenters.get(this._openedFilmId);
-    presenter.openPopup();
+    if (presenter) {
+      presenter.openPopup();
+    } else {
+      this._bodyElement.classList.remove('hide-overflow');
+    }
   }
 
   _clearCardsSection({resetRenderedCardsCount: resetRenderedCardsCount = false, resetSortType = false} = {}) {
