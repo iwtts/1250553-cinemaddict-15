@@ -4,7 +4,7 @@ import CardsListEmptyView from '../view/cards-list-empty';
 import CardsListView from '../view/cards-list';
 import ShowMoreButtonView from '../view/show-more-button';
 import LoadingView from '../view/loading.js';
-import CardPresenter, {State as CardPresenterViewState}  from './card';
+import CardPresenter from './card';
 
 import { filter } from '../utils/filter';
 import { RenderPosition, render, remove } from '../utils/render';
@@ -33,6 +33,8 @@ export default class CardsSection {
     this._cardsSectionComponent = new CardsSectionView();
     this._cardsListComponent = new CardsListView();
     this._loadingComponent = new LoadingView();
+
+    this._handleModeChange = this._handleModeChange.bind(this);
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -88,7 +90,7 @@ export default class CardsSection {
   }
 
   _renderCard(film) {
-    const cardPresenter = new CardPresenter(this._cardsListContainerElement, this._handleViewAction, this._api);
+    const cardPresenter = new CardPresenter(this._cardsListContainerElement, this._handleViewAction, this._handleModeChange, this._api);
     cardPresenter.init(film);
     this._cardPresenter.set(film.id, cardPresenter);
   }
@@ -170,23 +172,22 @@ export default class CardsSection {
     }
   }
 
+  _handleModeChange() {
+    this._cardPresenter.forEach((presenter) => presenter.resetView());
+  }
+
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update)
           .then((response) => {
             this._filmsModel.updateFilm(updateType, response);
-          })
-          .catch(() => {
-            this._cardPresenter.get(update.id).setViewState(CardPresenterViewState.ABORTING);
           });
         break;
       case UserAction.DELETE_COMMENT:
-        this._cardPresenter.get(update.id).setViewState(CardPresenterViewState.DELETING);
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._cardPresenter.get(update.id).setViewState(CardPresenterViewState.SAVING);
         this._filmsModel.updateFilm(updateType, update);
         break;
     }
