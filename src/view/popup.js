@@ -124,7 +124,7 @@ export default class Popup extends SmartView {
 
     this._deleteCommentClickHandler = this._deleteCommentClickHandler.bind(this);
 
-    this._setInnerHandlers();
+    // this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -132,10 +132,10 @@ export default class Popup extends SmartView {
   }
 
   restoreHandlers() {
-    this._setInnerHandlers();
-    // this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
-    // this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
-    // this.setMarkAsFavouriteClickHandler(this._callback.markAsFavouriteClick);
+    // this._setInnerHandlers();
+    this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
+    this.setMarkAsWatchedClickHandler(this._callback.markAsWatchedClick);
+    this.setMarkAsFavouriteClickHandler(this._callback.markAsFavouriteClick);
 
     this.setClosePopupClickHandler(this._callback.closePopupClick);
 
@@ -154,41 +154,41 @@ export default class Popup extends SmartView {
       .addEventListener('click', this._markAsFavouriteClickHandler);
   }
 
-  _addToWatchListClickHandler() {
-    this.updateData({
-      isInWatchList: !this._data.isInWatchList,
-    });
-    Popup.parseDataToFilm(this._data);
-  }
-
-  _markAsWatchedClickHandler() {
-    this.updateData({
-      isAlreadyWatched: !this._data.isAlreadyWatched,
-    });
-    Popup.parseDataToFilm(this._data);
-  }
-
-  _markAsFavouriteClickHandler() {
-    this.updateData({
-      isFavorite: !this._data.isFavorite,
-    });
-    Popup.parseDataToFilm(this._data);
-  }
-
-  // _addToWatchListClickHandler(evt) {
-  //   evt.preventDefault();
-  //   this._callback.addToWatchListClick();
+  // _addToWatchListClickHandler() {
+  //   this.updateData({
+  //     isInWatchList: !this._data.isInWatchList,
+  //   });
+  //   Popup.parseDataToFilm(this._data);
   // }
 
-  // _markAsWatchedClickHandler(evt) {
-  //   evt.preventDefault();
-  //   this._callback.markAsWatchedClick();
+  // _markAsWatchedClickHandler() {
+  //   this.updateData({
+  //     isAlreadyWatched: !this._data.isAlreadyWatched,
+  //   });
+  //   Popup.parseDataToFilm(this._data);
   // }
 
-  // _markAsFavouriteClickHandler(evt) {
-  //   evt.preventDefault();
-  //   this._callback.markAsFavouriteClick();
+  // _markAsFavouriteClickHandler() {
+  //   this.updateData({
+  //     isFavorite: !this._data.isFavorite,
+  //   });
+  //   Popup.parseDataToFilm(this._data);
   // }
+
+  _addToWatchListClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.addToWatchListClick();
+  }
+
+  _markAsWatchedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.markAsWatchedClick();
+  }
+
+  _markAsFavouriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.markAsFavouriteClick();
+  }
 
   _closePopupClickHandler(evt) {
     evt.preventDefault();
@@ -212,23 +212,23 @@ export default class Popup extends SmartView {
     });
   }
 
-  // setAddToWatchListClickHandler(callback) {
-  //   this._callback.addToWatchListClick = callback;
+  setAddToWatchListClickHandler(callback) {
+    this._callback.addToWatchListClick = callback;
 
-  //   this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._addToWatchListClickHandler);
-  // }
+    this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._addToWatchListClickHandler);
+  }
 
-  // setMarkAsWatchedClickHandler(callback) {
-  //   this._callback.markAsWatchedClick = callback;
+  setMarkAsWatchedClickHandler(callback) {
+    this._callback.markAsWatchedClick = callback;
 
-  //   this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._markAsWatchedClickHandler);
-  // }
+    this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._markAsWatchedClickHandler);
+  }
 
-  // setMarkAsFavouriteClickHandler(callback) {
-  //   this._callback.markAsFavouriteClick = callback;
+  setMarkAsFavouriteClickHandler(callback) {
+    this._callback.markAsFavouriteClick = callback;
 
-  //   this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._markAsFavouriteClickHandler);
-  // }
+    this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._markAsFavouriteClickHandler);
+  }
 
   setClosePopupClickHandler(callback) {
     this._callback.closePopupClick = callback;
