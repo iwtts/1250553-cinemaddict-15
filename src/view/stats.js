@@ -80,6 +80,13 @@ const createRankTemplate = (rank) => (
   </p>`
 );
 
+const createTopGenreTemplate = (topGenre) => (
+  `<li class="statistic__text-item">
+    <h4 class="statistic__item-title">Top genre</h4>
+    <p class="statistic__item-text">${topGenre}</p>
+  </li>`
+);
+
 const createStatsTemplate = (data) =>(
   `<section class="statistic">
     ${data.wathedFilmsAmount ? createRankTemplate(getRank(data.wathedFilmsAmount)) : ''}
@@ -112,16 +119,11 @@ const createStatsTemplate = (data) =>(
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
         <p class="statistic__item-text">
-          ${Math.ceil(data.wathedFilmsTotalDuration/MINUTES_IN_HOUR)}<span class="statistic__item-description">h</span>
+          ${Math.floor(data.wathedFilmsTotalDuration/MINUTES_IN_HOUR)}<span class="statistic__item-description">h</span>
           ${dayjs.duration(data.wathedFilmsTotalDuration, 'minutes').minutes()} <span class="statistic__item-description">m</span>
         </p>
       </li>
-      <li class="statistic__text-item">
-        <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">
-          ${data.topGenre ? data.topGenre : ''}
-        </p>
-      </li>
+      ${data.topGenre ? createTopGenreTemplate(data.topGenre): ''}
     </ul>
 
     <div class="statistic__chart-wrap">
@@ -188,7 +190,7 @@ export default class StatsView extends SmartView {
       wathedFilmsTotalDuration: films.reduce((acc, film) => (acc + film.runtime), 0),
       genres: sortedGenres.map((genre) => genre[0]),
       counts: sortedGenres.map((genre) => genre[1]),
-      topGenre: sortedGenres[0][0],
+      topGenre: sortedGenres.length > 0 ? sortedGenres[0][0] : null,
 
       checkedFilter: StatsFilterType.ALL_TIME.name,
     };
