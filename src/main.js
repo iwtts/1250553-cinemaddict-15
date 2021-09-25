@@ -2,7 +2,7 @@ import HeaderProfilePresenter from './presenter/header-profile';
 import StatsView from './view/stats';
 import FooterStatsView from './view/footer-stats';
 
-import Api from './api';
+import Api from './api/api.js';
 
 import NavigationPresenter from './presenter/navigation';
 import CardsSectionPresenter from './presenter/cards-section';
