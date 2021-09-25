@@ -89,6 +89,9 @@ export default class Navigation {
         });
       this._showStats();
     } else {
+      this._navigationComponent
+        .getElement().querySelector('.main-navigation__additional')
+        .classList.remove('main-navigation__additional--active');
       this._showFilms();
     }
   }

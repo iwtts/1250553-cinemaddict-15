@@ -113,8 +113,8 @@ export default class Card {
       return;
     }
 
-    this._onPopupClose();
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    this._onPopupClose();
 
     this._bodyElement.removeChild(this._popupComponent.getElement());
     this._bodyElement.classList.remove('hide-overflow');
@@ -220,6 +220,7 @@ export default class Card {
         const afterShaking = () => {
           this._popupComponent.setAddingCommentState(false);
         };
+        this._popupNewCommentComponent.getElement().querySelector('.film-details__comment-input').value = 'You must select reaction below before submit';
         this._popupNewCommentComponent.shake(afterShaking);
       });
   }
