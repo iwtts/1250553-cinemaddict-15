@@ -1,8 +1,8 @@
 import HeaderProfilePresenter from './presenter/header-profile';
-import StatsView from './view/stats.js';
+import StatsView from './view/stats';
 import FooterStatsView from './view/footer-stats';
 
-import Api from './api.js';
+import Api from './api';
 
 import NavigationPresenter from './presenter/navigation';
 import CardsSectionPresenter from './presenter/cards-section';
@@ -60,3 +60,6 @@ api.getFilms()
     filmsModel.setFilms(UpdateType.INIT, []);
   });
 
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
