@@ -1,4 +1,4 @@
-const CACHE_PREFIX = 'taskmanager-cache';
+const CACHE_PREFIX = 'cinemaddict-cache';
 const CACHE_VER = 'v15';
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
@@ -9,6 +9,7 @@ self.addEventListener('install', (evt) => {
   evt.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll([
+        '/',
         '/index.html',
         '/bundle.js',
         '/css/normalize.css',
@@ -75,7 +76,6 @@ const handleFetch = (evt) => {
             if (!response || response.status !== HTTP_STATUS_OK || response.type !== RESPONSE_SAFE_TYPE) {
               return response;
             }
-
             const clonedResponse = response.clone();
             caches.open(CACHE_NAME)
               .then((cache) => cache.put(request, clonedResponse));

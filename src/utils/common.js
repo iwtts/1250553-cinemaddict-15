@@ -16,3 +16,5 @@ export const getRank = (watchedFilmsAmount) => {
 };
 
 export const getWatchedFilmsAmount = (films) => films.filter((film) => film.isAlreadyWatched).length;
+
+export const isOnline = () => window.navigator.onLine;

@@ -19,69 +19,90 @@ export default class Provider {
     this._store = store;
   }
 
-  getTasks() {
+  getFilms() {
     if (isOnline()) {
-      return this._api.getTasks()
-        .then((tasks) => {
-          const items = createStoreStructure(tasks.map(FilmsModel.adaptToServer));
+      return this._api.getFilms()
+        .then((films) => {
+          const items = createStoreStructure(films.map(FilmsModel.adaptToServer));
           this._store.setItems(items);
-          return tasks;
+          return films;
         });
     }
 
-    const storeTasks = Object.values(this._store.getItems());
+    const storeFilms = Object.values(this._store.getItems());
 
-    return Promise.resolve(storeTasks.map(FilmsModel.adaptToClient));
+    return Promise.resolve(storeFilms.map(FilmsModel.adaptToClient));
   }
 
-  updateTask(task) {
+  updateFilm(film) {
     if (isOnline()) {
-      return this._api.updateTask(task)
-        .then((updatedTask) => {
-          this._store.setItem(updatedTask.id, FilmsModel.adaptToServer(updatedTask));
-          return updatedTask;
+      return this._api.updateFilm(film)
+        .then((updatedFilm) => {
+          this._store.setItem(updatedFilm.id, FilmsModel.adaptToServer(updatedFilm));
+          return updatedFilm;
         });
     }
 
-    this._store.setItem(task.id, FilmsModel.adaptToServer(Object.assign({}, task)));
+    this._store.setItem(film.id, FilmsModel.adaptToServer(Object.assign({}, film)));
 
-    return Promise.resolve(task);
+    return Promise.resolve(film);
   }
 
-  addTask(task) {
+  getComments(filmId){
     if (isOnline()) {
-      return this._api.addTask(task)
-        .then((newTask) => {
-          this._store.setItem(newTask.id, FilmsModel.adaptToServer(newTask));
-          return newTask;
+      return this._api.getComments(filmId);
+    }
+
+    return Promise.reject(new Error('Get comments failed'));
+  }
+
+  addComment(comment, filmId) {
+    if (isOnline()) {
+      return this._api.addComment(comment, filmId);
+    }
+
+    return Promise.reject(new Error('Add comment failed'));
+  }
+
+  deleteComment(commentId) {
+    if (isOnline()) {
+      return this._api.deleteComment(commentId);
+    }
+
+    return Promise.reject(new Error('Delete comment failed'));
+  }
+
+  addFilm(film) {
+    if (isOnline()) {
+      return this._api.addFilm(film)
+        .then((newFilm) => {
+          this._store.setItem(newFilm.id, FilmsModel.adaptToServer(newFilm));
+          return newFilm;
         });
     }
 
-    return Promise.reject(new Error('Add task failed'));
+    return Promise.reject(new Error('Add film failed'));
   }
 
-  deleteTask(task) {
+  deleteFilm(film) {
     if (isOnline()) {
-      return this._api.deleteTask(task)
-        .then(() => this._store.removeItem(task.id));
+      return this._api.deleteFilm(film)
+        .then(() => this._store.removeItem(film.id));
     }
 
-    return Promise.reject(new Error('Delete task failed'));
+    return Promise.reject(new Error('Delete film failed'));
   }
 
   sync() {
     if (isOnline()) {
-      const storeTasks = Object.values(this._store.getItems());
+      const storeFilms = Object.values(this._store.getItems());
 
-      return this._api.sync(storeTasks)
+      return this._api.sync(storeFilms)
         .then((response) => {
-          // Забираем из ответа синхронизированные задачи
-          const createdTasks = getSyncedTasks(response.created);
-          const updatedTasks = getSyncedTasks(response.updated);
+          const createdFilms = getSyncedTasks(response.created);
+          const updatedFilms = getSyncedTasks(response.updated);
 
-          // Добавляем синхронизированные задачи в хранилище.
-          // Хранилище должно быть актуальным в любой момент.
-          const items = createStoreStructure([...createdTasks, ...updatedTasks]);
+          const items = createStoreStructure([...createdFilms, ...updatedFilms]);
 
           this._store.setItems(items);
         });

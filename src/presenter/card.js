@@ -2,6 +2,8 @@ import CardView from '../view/card';
 import PopupView from '../view/popup';
 import PopupNewCommentView from '../view/popup-new-comment';
 
+import { isOnline } from '../utils/common';
+import { toast } from '../utils/toast';
 import { render, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../const.js';
 
@@ -180,6 +182,10 @@ export default class Card {
   }
 
   _handleDeleteCommentClick(id) {
+    if (!isOnline()) {
+      toast('You can\'t delete comment offline');
+      return;
+    }
     this._popupComponent.setDeletingCommentState(id, true);
     this._api.deleteComment(id)
       .then(() => {
@@ -204,6 +210,10 @@ export default class Card {
   }
 
   _handleAddComment(newCommentEmotion, newCommentText) {
+    if (!isOnline()) {
+      toast('You can\'t add comment offline');
+      return;
+    }
     this._popupNewCommentComponent.setAddingCommentState(true);
     this._api.addComment(this._film.id, {
       text: newCommentText,

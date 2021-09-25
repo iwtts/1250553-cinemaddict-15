@@ -3,6 +3,8 @@ import StatsView from './view/stats';
 import FooterStatsView from './view/footer-stats';
 
 import Api from './api/api.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 
 import NavigationPresenter from './presenter/navigation';
 import CardsSectionPresenter from './presenter/cards-section';
@@ -16,19 +18,24 @@ import { UpdateType } from './const';
 
 const AUTHORIZATION = 'Basic xX2sd3dfSwcX1sa2x';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
+const STORE_PREFIX = 'taskmanager-localstorage';
+const STORE_VER = 'v15';
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerStatsContainerElement = document.querySelector('.footer__statistics');
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const headerProfileModel = new HeaderProfileModel();
 const filmsModel = new FilmsModel();
 const filtersModel = new FiltersModel();
 
 const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel, headerProfileModel);
-const cardsSectionPresenter = new CardsSectionPresenter(mainElement, filmsModel, filtersModel, api);
+const cardsSectionPresenter = new CardsSectionPresenter(mainElement, filmsModel, filtersModel, apiWithProvider);
 
 let statsComponent = null;
 
@@ -51,7 +58,7 @@ headerProfilePresenter.init();
 navigationPresenter.init();
 cardsSectionPresenter.init();
 
-api.getFilms()
+apiWithProvider.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
     render(footerStatsContainerElement, new FooterStatsView(filmsModel.getFilms().length));
@@ -62,4 +69,13 @@ api.getFilms()
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  document.title = document.title.replace(' [offline]', '');
+  apiWithProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  document.title += ' [offline]';
 });
