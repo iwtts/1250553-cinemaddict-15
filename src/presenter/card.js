@@ -29,7 +29,7 @@ export default class Card {
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
     this._handleAddComment = this._handleAddComment.bind(this);
 
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this.escKeyDownHandler = this.escKeyDownHandler.bind(this);
   }
 
   init(film) {
@@ -90,7 +90,7 @@ export default class Card {
 
   openPopup() {
     this._onPopupOpen();
-    document.addEventListener('keydown', this._escKeyDownHandler);
+    document.addEventListener('keydown', this.escKeyDownHandler);
 
     const renderPopup = (comments) => {
       this._comments = comments.slice();
@@ -113,14 +113,14 @@ export default class Card {
       return;
     }
 
-    document.removeEventListener('keydown', this._escKeyDownHandler);
+    document.removeEventListener('keydown', this.escKeyDownHandler);
     this._onPopupClose();
 
     this._bodyElement.removeChild(this._popupComponent.getElement());
     this._bodyElement.classList.remove('hide-overflow');
   }
 
-  _escKeyDownHandler(evt) {
+  escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
 

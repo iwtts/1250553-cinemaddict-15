@@ -166,6 +166,11 @@ export default class CardsSection {
   }
 
   _clearCardsSection({resetRenderedCardsCount: resetRenderedCardsCount = false, resetSortType = false} = {}) {
+    const openedCardPresenter = this._cardPresenters.get(this._openedFilmId);
+    if (openedCardPresenter) {
+      document.removeEventListener('keydown', openedCardPresenter.escKeyDownHandler);
+    }
+
     const filmsCount = this._getFilms().length;
 
     this._cardPresenters.forEach((presenter) => presenter.destroy());
